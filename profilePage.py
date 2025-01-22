@@ -1,5 +1,5 @@
-import tkinter as tk
+import tkinter as tk 
+from tkinter import ttk
 
-def user_profile(profile_page):
-    label1 = tk.Label(profile_page, text='Welcome to User Profile')
-    label1.place(x=425, y=250)
+def user_page():
+   pass
