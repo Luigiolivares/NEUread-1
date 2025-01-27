@@ -1,13 +1,14 @@
 # Yung mga imports na ito, para ma file naten yung functions naten na maayus
 import tkinter as tk
-
+import customtkinter as ctk
+from tkinter import *
+from PIL import Image, ImageTk
 from user_Profile import Main_user_page
 from borrow_return import Main_book_page
 from search import Main_search_page
 from history import Main_history_page
 from rules_regulation import Main_rules_page
 from exit_function import Main_exit_page
-
 # INITIAL VARIABLES AND SET UP IS FROM 12-23 HERE
 root = tk.Tk()
 root.attributes('-fullscreen', True) #ensures uses fullscreen for our frames
@@ -18,6 +19,12 @@ content = tk.Frame(container) #this is where the pages itself will be placed
 content.pack(side='right', fill='both', expand=True)
 entry_page = tk.Frame(content)
 entry_page.place(x=0, y=0, width=1720, height=1080)
+image_path= Image.open("bg_entry.png")
+window_width = root.winfo_screenwidth()
+window_height = root.winfo_screenheight()
+resized_image = image_path.resize((window_width, window_height), Image.Resampling.LANCZOS)  # Resize to fit screen
+image_path = ImageTk.PhotoImage(resized_image)
+
 #this is only for the entry page, when the login button has been pressed
 def open():
     Main_user_page(content)
@@ -39,12 +46,13 @@ button6.pack(fill="x")
 
 #Entry Page
 def Entry_Page():
-    label = tk.Label(entry_page, sidebar.pack_forget(), text='Welcome to NEURead', 
-                     font=('Arial', 32)) #add na lg kayu here ng variable for student
-    label.place(x=425, y=250)
-    button = tk.Button(entry_page, text='Login', font=('Arial', 12), 
-                       command= lambda: open())
-    button.place(x=600, y=300, width=100)
+# Create a Label widget to display the image
+    bg_image = tk.Label(entry_page, image = image_path)
+    bg_image.place(x=0, y=0)
+    label = tk.Label(entry_page, text='Welcome to NEURead!', font=('Arial', 50)) #add na lg kayu here ng variable for student
+    label.place(x=355, y=295)
+    button = tk.Button(entry_page, text='Login', font=('Arial', 20), bg="#004AAD", fg="white", width=18, command= lambda: open())
+    button.place(x=555, y=400)
     entry_page.tkraise()
 
 Entry_Page()
