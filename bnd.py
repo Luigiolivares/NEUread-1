@@ -20,6 +20,12 @@ def getUserInfo(RFID, purpose):
     elif purpose == "history":
         mycursor.execute(f"SELECT * FROM borrow_history WHERE RFID = {RFID};")
         return mycursor.fetchall()
-def searchBook(title):
-    mycursor.execute("SELECT * FROM books WHERE Title LIKE %s", (f"%{title}%",))
+def searchBooks(column, ID):
+    mycursor.execute(f"SELECT * FROM books WHERE {column} LIKE %s", (f"%{ID}%",))
+    return mycursor.fetchall()
+def showGenreBooks(genre, nthFrom, nthTo):
+    mycursor.execute("SELECT * FROM books WHERE Genre = %s LIMIT %s OFFSET %s", (genre, nthTo, nthFrom))
+    return mycursor.fetchall()
+def showBorrowHistory(RFID, nthTo, nthFrom):
+    mycursor.execute("SELECT * FROM borrowed_books WHERE RFID = %s LIMIT %s OFFSET %s", (RFID, nthTo, nthFrom))
     return mycursor.fetchall()
