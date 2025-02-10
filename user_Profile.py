@@ -1,6 +1,7 @@
 import tkinter as tk 
 import customtkinter as ctk
-def Main_user_page(content):
+def Main_user_page(content, profileInfo):
+    name = profileInfo[0][0][1]
     user_page = tk.Frame(content)
     user_page.place(x=0, y=0, width=1720, height=1080)
  # Box 1 with a red background
