@@ -21,18 +21,18 @@ def create_rounded_frame(parent, width, height, radius=20):
         0, radius, width, height - radius, outline="", fill="white")  # right edge
     # FRAME LABEL
     label1 = tk.Label(round_canvas, text='Library Policies & Regulations', font=('Arial', 30, 'bold'), fg="navy", bg='white')
-    label1.place(x=10, y=10)  # Top-left corner
+    label1.place(x=(0.0058 * width), y=(0.0058 * height))  # Top-left corner
     
     return round_canvas
     
-def Main_rules_page(content):
+def Main_rules_page(content, x_size, y_size):
     rules_page = tk.Frame(content)
-    rules_page.place(x=0, y=0, width=1720, height=1080)
+    rules_page.place(x=0, y=0, width=x_size, height=y_size)
     label1 = tk.Label(rules_page, text='New Era University', font=('Arial', 25, 'bold'))
     label1.place(x=1050, y=50)
     # ROUNDED FRAME VARIABLE
-    round_canvas = create_rounded_frame(rules_page, 1300, 600)  # Increased width and height
-    round_canvas.place(x=100, y=130)
+    round_canvas = create_rounded_frame(rules_page, (0.76 * x_size), (0.56 * y_size))  # Increased width and height
+    round_canvas.place(x=(0.05 * x_size), y=(0.12 * y_size))
 
     # POLICIES TEXT
     policies_text = """  • No school ID. No proper uniform, No Entry policy is implemented.

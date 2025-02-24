@@ -93,7 +93,7 @@ def Main_search_page(content):
         else:
             next.place(relx=next_x, rely=next_y, anchor= anchorNext)
         print(genresNum)
-    
+
     def firstSection(genre, num, sectionName, nextButton, prevButton, x, y, anchor):
         """ Controls the Next and Prev navigation of books within a genre. """
         global firstSectionNum, secondSectionNum
@@ -116,7 +116,12 @@ def Main_search_page(content):
             print(sectionVar)
             # Fetch books
             books = booksOutput(genre, sectionName, num)
-            showBooks(books)
+            if sectionName == "firstSectionNum":
+                showBooks(books, 0.30)
+                print(sectionName)
+            elif sectionName == "secondSectionNum":
+                showBooks(books, 0.775)
+                print(sectionName)
             if books == 3:
                 # Ensure the Next button remains visible if more books exist
                 if not nextButton.winfo_ismapped():
@@ -158,7 +163,7 @@ def Main_search_page(content):
                       corner_radius=20, border_width=15, border_color="DeepSkyBlue3")
     books.place(relx=0.5, rely=0.55, anchor="center")
 
-# Divider Line
+    # Divider Line
     divider = ctk.CTkFrame(books, width=1000, height=2, fg_color="grey")
     divider.place(relx=0.5, rely=0.5, anchor="center")
 
@@ -178,7 +183,7 @@ def Main_search_page(content):
     genre_next_button = ctk.CTkButton(books, text='', image=next_image, bg_color="white", width=50, fg_color="white", command = lambda: genresButton(0, genre_next_button, genre_back_button, 0.97, 0.05, 0.93, 0.05, "ne", "ne", top_back_book, bot_back_book))
     genre_next_button.place(relx=0.97, rely=0.05, anchor='ne')
 
-    genre_back_button = ctk.CTkButton(books, text='', image=next_image, bg_color="white", width=50, fg_color="white", command = lambda: genresButton(4, genre_next_button, genre_back_button, 0.97, 0.05, 0.93, 0.05, "ne", "ne", top_back_book, bot_back_book))
+    genre_back_button = ctk.CTkButton(books, text='', image= back_image, bg_color="white", width=50, fg_color="white", command = lambda: genresButton(4, genre_next_button, genre_back_button, 0.97, 0.05, 0.93, 0.05, "ne", "ne", top_back_book, bot_back_book))
     genre_back_button.place(relx=0.93, rely=0.05, anchor='ne')
 # Books (placed where they were inside `top_books` and `bot_books`)
     def showBooks(bookArray, y):
@@ -206,13 +211,14 @@ def Main_search_page(content):
             
             # Create book button
             book_button = ctk.CTkButton(
-                books, text=title, image=ctk_image, compound="top", 
-                fg_color="white", hover_color="lightblue", text_color="midnightblue", 
-                font=("Arial", 25, "bold")
+                books, image=ctk_image, compound="top", 
+                fg_color="white", hover_color="lightblue"
             )
-            
+            titleLabel = ctk.CTkLabel(books, text=title, font=("Arial", 10, "bold"), text_color="grey")
+            titleLabel.place(relx=positions[i][0], rely=(positions[i][1])+0.2, anchor="center")
+            genre_labels.extend([titleLabel])
             # Place button using predefined positions
-            book_button.place(relx=positions[i][0], rely=positions[i][1], anchor="center")
+            book_button.place(relx=positions[i][0], rely=(positions[i][1]), anchor="center")
             book_button.image = ctk_image  # Keep reference to prevent garbage collection
             
             book_buttons.append(book_button)
