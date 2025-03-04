@@ -15,12 +15,19 @@ def getUserInfo(RFID):
     mycursor.execute(f"SELECT * FROM borrowed_books WHERE RFID = {RFID} AND `Date_returned` IS NULL;")
     userBorrowedBooks = mycursor.fetchall()
     return userInfo, userBorrowedBooks
+
 def searchBooks(column, ID, nthTo, nthFrom):
     mycursor.execute(f"SELECT * FROM books WHERE {column} LIKE %s LIMIT %s OFFSET %s", (f"%{ID}%", nthTo, nthFrom))
     return mycursor.fetchall()
+
+def searchBookID(bookID):
+    mycursor.execute(f"SELECT Title, Author, Availability FROM books WHERE Book_ID = {bookID};")
+    return mycursor.fetchall()
+
 def showGenreBooks(genre, nthFrom, nthTo):
     mycursor.execute("SELECT Book_Cover, Title  FROM books WHERE Genre = %s LIMIT %s OFFSET %s", (genre, nthTo, nthFrom))
     return mycursor.fetchall()
+
 def showBorrowHistory(RFID, nthTo, nthFrom):
     mycursor.execute(
         "SELECT Book_ID, Date_Borrowed, Date_returned FROM borrowed_books WHERE RFID = %s AND `Date_returned` IS NOT NULL LIMIT %s OFFSET %s", 
@@ -38,9 +45,17 @@ def showBorrowHistory(RFID, nthTo, nthFrom):
             title, author, book_cover = book_info
             allBooks.append([book_cover, title, author, date_borrowed, date_returned])
     return allBooks
+
 def showGenres(nthTo, nthFrom):
     mycursor.execute("SELECT DISTINCT `Genre` FROM books LIMIT %s OFFSET %s", (nthTo, nthFrom))
     return mycursor.fetchall()
+
+def adminCheck(RFID):
+    mycursor.execute("SELECT AName FROM admins WHERE ARFID = %s", (RFID,))
+    return mycursor.fetchall()
+def addBorrowBook(RFID, Book_ID, Date_Borrowed, Deadline, Date_returned):
+    mycursor.execute("INSERT INTO borrowed_books (RFID, Book_ID, Date_Borrowed, Deadline, Date_returned) VALUES (%s, %s, %s, %s, %s)", (RFID, Book_ID, Date_Borrowed, Deadline, Date_returned))
+    db.commit()
 def showWhoToEmail():
     listGmail = []
     

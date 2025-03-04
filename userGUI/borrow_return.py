@@ -1,30 +1,113 @@
 import tkinter as tk
 import random
-
-def Main_borrow_return_page(content):
+import customtkinter as ctk
+from bnd import *
+from datetime import datetime, timedelta
+import time
+rfid_data = ""
+adminRFID = None
+userRFID = None
+initialUser = None
+bookID = None
+last_scan_time = 0
+def Main_borrow_return_page(content, screenWidth, screenHeight, userID, main):
+    global initialUser
+    initialUser = userID
     frame = create_frame(content)
-    
     tk.Label(frame, text='Books Section', font=('Arial', 24)).place(x=600, y=100)
-    
-    tk.Button(frame, text="Borrow", font=('Arial', 14), command=lambda: borrow_page(content)).place(x=600, y=300, width=200)
+    tk.Button(frame, text="Borrow", font=('Arial', 14), command=lambda: borrow_page(content, main)).place(x=600, y=300, width=200)
     tk.Button(frame, text="Return", font=('Arial', 14), command=lambda: return_page(content)).place(x=600, y=400, width=200)
     
     frame.tkraise()
 
-def borrow_page(content):
-    frame = create_frame(content)
-    
-    label = tk.Label(frame, text='Borrow Books', font=('Arial', 24))
+def borrow_page(content, root):
+    # Destroy any existing frames inside content to prevent overlap
+    for widget in content.winfo_children():
+        widget.destroy()
+
+    # Create and place borrowFrame
+    borrowFrame = tk.Frame(content, width=1720, height=1080)
+    borrowFrame.place(x=0, y=0)  # This ensures it fills the entire content area
+
+    # Title Label
+    label = tk.Label(borrowFrame, text='Borrow Books', font=('Arial', 24))
     label.place(x=600, y=100)
-    
-    subheading = tk.Label(frame, text='Please Tap Librarian ID Card on the reader', font=('Arial', 16))
+
+    # Subheading Label
+    subheading = tk.Label(borrowFrame, text='Please Enter The Book ID', font=('Arial', 16))
     subheading.place(x=500, y=150)
+
+    # Search Bar (CTkEntry)
+    book_id_entry = ctk.CTkEntry(borrowFrame, width=300, height=40, font=('Arial', 14))
+    book_id_entry.place(x=500, y=200)
+
+    # Function to Save Input
+    def save_input():
+        global bookID
+        book_id = book_id_entry.get()
+        search_result = searchBookID(book_id)
+
+        if search_result:
+            print(f"Book ID Entered: {search_result}", ", kukuhain na admin")
+            book_id_entry.place_forget()
+            bookID = book_id
+            
+            getAdmin(content, root)
+        else: 
+            print("Book not found")
+
+    # Search Button
+    search_button = ctk.CTkButton(borrowFrame, text="Search", command=save_input)
+    search_button.place(x=820, y=200)
+
+def getAdmin(content, root):
+    root.bind("<Key>", lambda event: keyPressed(event, content))
+
+def getUser(iconActive):
+    print("changing icons, enter user RFID")
+
+def completeTransaction(RFID):
+    global bookID
+    Date_Borrowed = datetime.now()
+    Deadline = (Date_Borrowed + timedelta(days=3)).date()
+    addBorrowBook(RFID, bookID, Date_Borrowed, Deadline, None)
+    print("Add mo na sa database")
+
+def is_rfid_scan():
+    global last_scan_time
+    current_time = time.time()
+    if current_time - last_scan_time < 0.1:
+        last_scan_time = current_time
+        return True
+    last_scan_time = current_time
+    return False
+
+
+def keyPressed(event, content):
+    global rfid_data, adminRFID, userRFID, initialUser
     
-    frame.after(3000, lambda: subheading.config(text='Please type in the Book ID'))
-    frame.after(6000, lambda: subheading.config(text='Please Tap Student ID Card on the reader'))
-    frame.after(9000, lambda: thank_you_page(content))
-    
-    frame.tkraise()
+    if not is_rfid_scan():
+        return  # Ignore manual keyboard input
+    print("pressed key")
+    if event.keysym == "Return":
+        if rfid_data and not adminRFID:
+            admin = adminCheck(rfid_data)
+            if admin:
+                print(f"ADMIN Entered: {admin}")
+                adminRFID = admin
+                getUser(content)
+            else:
+                print("Admin not found")
+            rfid_data = ""  # Reset buffer
+        elif rfid_data and adminRFID:
+            user = getUserInfo(rfid_data)
+            if user[0][0][0] == initialUser:
+                completeTransaction(rfid_data)
+                print(f"User Entered: {user[0][0][1]}")
+            else:
+                print("Incorrect user")
+    else:
+        rfid_data += event.char
 
 def return_page(content):
     frame = create_frame(content)

@@ -30,22 +30,22 @@ def start_neuread_app(RFID, root, return_to_idle):
     container = tk.Frame(root)
     container.pack(fill="both", expand=True)
 
-    sidebar = tk.Frame(container, width=200, bg='gray') 
+    sidebar = tk.Frame(container, width=300, bg='#004AAD', bd = 0) 
     content = tk.Frame(container)  # The frame where pages will be placed
     content.pack(side='right', fill='both', expand=True)
-
-    entry_page = tk.Frame(content)
-    entry_page.place(x=0, y=0, width=1720, height=1080)
-
-    # Load and Resize Background Image
+        # Load and Resize Background Image
     image_path = Image.open("bg_entry.png")
     window_width = root.winfo_screenwidth()
     window_height = root.winfo_screenheight()
+
+    entry_page = tk.Frame(content)
+    entry_page.place(x=0, y=0, width=window_width, height=window_height)
+
     resized_image = image_path.resize((window_width, window_height), Image.Resampling.LANCZOS)  
     image_path = ImageTk.PhotoImage(resized_image)
 
     # Sample Profile Information
-    profileInfo = ([("0010567289", 'Kate Zayen Echalose', 'katezayen.echalose@neu.edu.ph', '23-10338-159', 1, 0)], [])
+    profileInfo = getUserInfo(RFID)
 
     # Function to Switch to Main User Page
     def open_main_page():
@@ -62,16 +62,16 @@ def start_neuread_app(RFID, root, return_to_idle):
     button4_icon = ImageTk.PhotoImage(Image.open("btn4.png").resize((60,60)))
     button5_icon = ImageTk.PhotoImage(Image.open("btn5.png").resize((60,60)))
     button6_icon = ImageTk.PhotoImage(Image.open("btn6.png").resize((60,60)))
+    # Track the currently active button
 
-    # Sidebar Buttons
     button1 = tk.Button(sidebar, command=lambda: Main_user_page(content, profileInfo), image=button1_icon, compound='left', bg='#004AAD', bd=0) 
     button1.image = button1_icon
     button1.pack(fill='x', expand =True, pady=5)
     
-    button2 = tk.Button(sidebar, command=lambda: Main_borrow_return_page(content), image=button2_icon, compound='left', bg='#004AAD', bd=0)
+    button2 = tk.Button(sidebar, command=lambda: Main_borrow_return_page(content, window_width, window_height, profileInfo[0][0][0], root), image=button2_icon, compound='left', bg='#004AAD', bd=0)
     button2.image = button2_icon
     button2.pack(fill='x', expand=True, pady=5)
-
+    
     button3 = tk.Button(sidebar, command=lambda: Main_search_page(content), image=button3_icon, compound='left', bg='#004AAD', bd=0)
     button3.image = button3_icon
     button3.pack(fill='x', expand=True, pady=5)
@@ -80,11 +80,11 @@ def start_neuread_app(RFID, root, return_to_idle):
     button4.image = button4_icon
     button4.pack(fill='x', expand=True, pady=5)
 
-    button5 = tk.Button(sidebar, command=lambda: Main_rules_page(content), image=button5_icon, compound='left', bg='#004AAD', bd=0)
+    button5 = tk.Button(sidebar, command=lambda: Main_rules_page(content, window_width, window_height), image=button5_icon, compound='left', bg='#004AAD', bd=0)
     button5.image = button5_icon
     button5.pack(fill='x', expand=True, pady=5)
 
-    button6 = tk.Button(sidebar, command=lambda: Main_exit_page(content), image=button6_icon, compound='left', bg='#004AAD', bd=0)
+    button6 = tk.Button(sidebar, command=lambda: Main_exit_page(content, return_to_idle), image=button6_icon, compound='left', bg='#004AAD', bd=0)
     button6.image = button6_icon
     button6.pack(fill="x", expand=True, pady=5)
 
@@ -99,11 +99,11 @@ def start_neuread_app(RFID, root, return_to_idle):
     font_label = tkFont.Font(family="Poppins Bold", size=50)
     introText = f"Welcome to NEURead,\n {profileInfo[0][0][1]}"
     label = tk.Label(entry_page, text=introText, font=font_label, bg="white")
-    label.place(x=450, y=350)
+    label.place(x=(window_width * 0.26), y=(0.32 * window_height))
 
         # Login Button
     font_button = tkFont.Font(family="Poppins Bold", size=15)
     button = tk.Button(entry_page, text='Login', font=font_button, bg="#004AAD", fg="white", width=18, command=open_main_page)
-    button.place(x=690, y=500)
+    button.place(x=(0.40 * window_width), y=(0.46 * window_width))
 
     entry_page.tkraise()
