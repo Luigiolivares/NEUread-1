@@ -21,11 +21,11 @@ def searchBooks(column, ID, nthTo, nthFrom):
     return mycursor.fetchall()
 
 def searchBookID(bookID):
-    mycursor.execute(f"SELECT Title, Author, Availability FROM books WHERE Book_ID = {bookID};")
+    mycursor.execute(f"SELECT Title, Author, Description, Availability, Book_Cover, Genre, Year_Publication, Book_Address FROM books WHERE Book_ID = {bookID};")
     return mycursor.fetchall()
 
 def showGenreBooks(genre, nthFrom, nthTo):
-    mycursor.execute("SELECT Book_Cover, Title  FROM books WHERE Genre = %s LIMIT %s OFFSET %s", (genre, nthTo, nthFrom))
+    mycursor.execute("SELECT Book_ID, Book_Cover, Title  FROM books WHERE Genre = %s LIMIT %s OFFSET %s", (genre, nthTo, nthFrom))
     return mycursor.fetchall()
 
 def showBorrowHistory(RFID, nthTo, nthFrom):
@@ -38,7 +38,7 @@ def showBorrowHistory(RFID, nthTo, nthFrom):
     
     allBooks = []
     for book_id, date_borrowed, date_returned in items:
-        mycursor.execute("SELECT Title, Author, Book_Cover FROM books WHERE book_ID = %s", (book_id,))
+        mycursor.execute("SELECT Title, Author, Book_Cover, Availability, Year_Publication, Book_Address FROM books WHERE book_ID = %s", (book_id,))
         book_info = mycursor.fetchone()  # Fetch one book's info
         
         if book_info:  # If book info is found, combine data

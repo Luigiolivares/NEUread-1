@@ -11,7 +11,7 @@ window_width = root.winfo_screenwidth()
 window_height = root.winfo_screenheight() 
 last_scan_time = 0
 active = False
-rfid_data = ""
+rfid_data = "0010567289"
 def create_idle_page():
     """Creates the idle page UI."""
     global idle_frame
@@ -42,15 +42,15 @@ def is_rfid_scan():
     return False
 
 def on_key_press(event):
-
-    if not is_rfid_scan():
-        return 
+    #if not is_rfid_scan():
+    #    return 
     global active
     global rfid_data
     global idle_frame
     if active:
         return
-    if event.keysym == "Return":
+    if event.keysym == "l":
+        print("pressing")
         if rfid_data:
             if getUserInfo(rfid_data):
                 active = True

@@ -50,7 +50,7 @@ def borrow_page(content, root):
         if search_result:
             print(f"Book ID Entered: {search_result}", ", kukuhain na admin")
             book_id_entry.place_forget()
-            bookID = book_id
+            bookID = search_result
             
             getAdmin(content, root)
         else: 

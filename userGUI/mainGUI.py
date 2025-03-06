@@ -105,5 +105,3 @@ def start_neuread_app(RFID, root, return_to_idle):
     font_button = tkFont.Font(family="Poppins Bold", size=15)
     button = tk.Button(entry_page, text='Login', font=font_button, bg="#004AAD", fg="white", width=18, command=open_main_page)
     button.place(x=(0.40 * window_width), y=(0.46 * window_width))
-
-    entry_page.tkraise()

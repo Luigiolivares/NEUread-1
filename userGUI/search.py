@@ -3,6 +3,7 @@ from bnd import *
 import customtkinter as ctk  # type: ignore
 from PIL import Image, ImageTk  # type: ignore
 import io
+from Book_profile import *
 
 
 # GLOBAL VARIABLES HERE
@@ -190,7 +191,7 @@ def Main_search_page(content):
         bot_label = ctk.CTkLabel(books, text=genres[genresNum + 1], font=("Arial", 28, "bold"), text_color="grey")
         bot_label.place(relx=0.05, rely=0.53, anchor="w")
         genre_labels.extend([top_label, bot_label])
-        for i, (blob, title) in enumerate(bookArray):
+        for i, (id, blob, title) in enumerate(bookArray):
             try:
                 # Load image from binary data
                 image = Image.open(io.BytesIO(blob)).resize((136, 205))
@@ -202,8 +203,9 @@ def Main_search_page(content):
             # Create book button
             book_button = ctk.CTkButton(
                 books, image=ctk_image, compound="top", 
-                fg_color="white", hover_color="lightblue"
+                fg_color="white", hover_color="lightblue", command = lambda id=id: book_profile(content, id)
             )
+            print(id)
             titleLabel = ctk.CTkLabel(books, text=title, font=("Arial", 10, "bold"), text_color="grey")
             titleLabel.place(relx=positions[i][0], rely=(positions[i][1])+0.2, anchor="center")
             genre_labels.extend([titleLabel])
