@@ -45,7 +45,7 @@ def start_neuread_app(RFID, root, return_to_idle):
     image_path = ImageTk.PhotoImage(resized_image)
 
     # Sample Profile Information
-    profileInfo = ([("0010567289", 'Kate Zayen Echalose', 'katezayen.echalose@neu.edu.ph', '23-10338-159', 1, 0)], [])
+    profileInfo = getUserInfo(RFID)
 
     # Function to Switch to Main User Page
     def open_main_page():
@@ -68,7 +68,7 @@ def start_neuread_app(RFID, root, return_to_idle):
     button1.image = button1_icon
     button1.pack(fill='x', expand =True, pady=5)
     
-    button2 = tk.Button(sidebar, command=lambda: Main_borrow_return_page(content), image=button2_icon, compound='left', bg='#004AAD', bd=0)
+    button2 = tk.Button(sidebar, command=lambda: Main_borrow_return_page(content, window_width, window_height, profileInfo[0][0][0], root), image=button2_icon, compound='left', bg='#004AAD', bd=0)
     button2.image = button2_icon
     button2.pack(fill='x', expand=True, pady=5)
     
@@ -105,5 +105,3 @@ def start_neuread_app(RFID, root, return_to_idle):
     font_button = tkFont.Font(family="Poppins Bold", size=15)
     button = tk.Button(entry_page, text='Login', font=font_button, bg="#004AAD", fg="white", width=18, command=open_main_page)
     button.place(x=(0.40 * window_width), y=(0.46 * window_width))
-
-    entry_page.tkraise()

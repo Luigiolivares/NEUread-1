@@ -1,5 +1,7 @@
 import tkinter as tk
 from userGUI.mainGUI import start_neuread_app
+import time
+from bnd import *
 # Create the main application window
 root = tk.Tk()
 root.title("Idle Page")
@@ -7,9 +9,9 @@ root.attributes('-fullscreen', True)
 
 window_width = root.winfo_screenwidth()
 window_height = root.winfo_screenheight() 
-
+last_scan_time = 0
 active = False
-rfid_data = ""
+rfid_data = "0010567289"
 def create_idle_page():
     """Creates the idle page UI."""
     global idle_frame
@@ -30,15 +32,39 @@ def return_to_idle():
     active = False
     create_idle_page()
 
+def is_rfid_scan():
+    global last_scan_time
+    current_time = time.time()
+    if current_time - last_scan_time < 0.1:
+        last_scan_time = current_time
+        return True
+    last_scan_time = current_time
+    return False
+
 def on_key_press(event):
-    """Handles RFID input and transitions to the main app."""
-    print("key pressed")
+    #if not is_rfid_scan():
+    #    return 
     global active
     global rfid_data
-    if not active:
-        active = True
-        start_neuread_app(75240, root, return_to_idle)
-        idle_frame.destroy()
+    global idle_frame
+    if active:
+        return
+    if event.keysym == "l":
+        print("pressing")
+        if rfid_data:
+            if getUserInfo(rfid_data):
+                active = True
+                print(f"RFID Scanned: {rfid_data}")
+                root.unbind("<Key>")
+                start_neuread_app(rfid_data, root, return_to_idle)
+                rfid_data = ""  # Reset buffer
+                idle_frame.destroy()
+            else:
+                rfid_data = ""
+                print("no user as such")
+    else:
+        rfid_data += event.char
+        print(rfid_data)
 
 # Initialize the idle page at startup
 create_idle_page()
