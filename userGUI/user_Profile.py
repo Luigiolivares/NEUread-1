@@ -1,112 +1,119 @@
+###########
 import customtkinter as ctk
-from datetime import datetime
-from pytz import timezone
-from PIL import Image
 import tkinter as tk
+from datetime import datetime
+import pytz
+from PIL import Image 
+from io import BytesIO
+from penaltyRemoved import *
+from bnd import *
+def Main_user_page(content, RFID):
+    person = open("admin_pic.png", "rb")
+    ww = content.winfo_screenwidth()
+    wh = content.winfo_screenheight()
+    profileInfo = getUserInfo(RFID)
+    borrowedBooks = profileInfo[1]
+    print(borrowedBooks)
+    person_image = ctk.CTkImage(Image.open(person), size=((75), (75)))
 
-image_cache = {}
-
-PH_TZ = timezone("Asia/Manila")
-
-def get_philippine_time():
-    return datetime.now(PH_TZ)
-
-def load_image(filename, size=(100, 150)):
-    if filename in image_cache:
-        return image_cache[filename]
-    
-    try:
-        pil_image = Image.open(filename)
-        ctk_image = ctk.CTkImage(light_image=pil_image, size=size)
-        image_cache[filename] = ctk_image
-        return ctk_image
-    except Exception as e:
-        print(f"Error loading image {filename}: {e}")
-        return None
-
-def is_penalized(due_date, returned=False):
-    today = get_philippine_time().date()
-    due_date_obj = datetime.strptime(due_date, "%b %d, %Y").date()
-    return due_date_obj < today and not returned
-
-def display_due_date(parent, book, returned=False):
-    penalized_status = is_penalized(book['due_date'], returned)
-    due_date_text = "Due: " + book['due_date']
-    text_color = "red" if penalized_status else "black"
-
-    due_date_label = ctk.CTkLabel(parent, text=due_date_text, text_color=text_color, font=("Arial", 15, "bold"))
-    due_date_label.place(relx=0.4, rely=0.7, anchor="w")
-
-    return penalized_status
-
-def Main_user_page(content, profileInfo):
-    name = profileInfo[0][0][1]
     user_page = tk.Frame(content)
-    user_page.place(x=0, y=0, relwidth=1, relheight=1)
+    user_page.place(width=ww, height=wh)
 
-    borrowed_books = [
-        {"title": "Wimpy Kid", "author": "Jeff Kinney", "borrowed_date": "Feb 23, 2025", "due_date": "Feb 26, 2025", "image": "wimpy.png"},
-        {"title": "Little Women", "author": "Louisa May Alcott", "borrowed_date": "Feb 23, 2025", "due_date": "Feb 26, 2025", "image": "little women.png"}
-    ]
+    time_border = ctk.CTkFrame(user_page, width=(0.08 * ww), height=(0.067 * wh), fg_color="azure3", 
+                      corner_radius=13, border_width=15, border_color="azure3")
+    time_border.place(x=(0.81 * ww), y=(0.05 * wh))
 
-    name_box = ctk.CTkFrame(user_page, width=1600, height=150, fg_color="white", corner_radius=20)
-    name_box.place(x=50, y=70)
+    date_border = ctk.CTkFrame(user_page, width=(0.13 * ww), height=(0.069 * wh), fg_color="azure3", 
+                      corner_radius=13, border_width=15, border_color="azure3")
+    date_border.place(x=(0.11 * ww), y=(0.05 * wh))
 
-    name_label = ctk.CTkLabel(name_box, text=name, text_color="black", font=("Times New Roman", 50, "bold"))
-    name_label.place(relx=0.02, rely=0.3, anchor="w")
+    def update_date():
+        ph_timezone = pytz.timezone("Asia/Manila")
+        current_time = datetime.now(ph_timezone)
+        formatted_date = current_time.strftime("%B %d, %Y")
+        formatted_time = current_time.strftime("%I:%M %p")
+        date_label.configure(text=formatted_date)
+        time_label.configure(text=formatted_time)
+        user_page.after(1000, update_date)
 
-    id_label = ctk.CTkLabel(name_box, text="ID: 12345678", text_color="black", font=("Times New Roman", 22))
-    id_label.place(relx=0.02, rely=0.6, anchor="w")
+    date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
+    date_label.place(relx=0.07, rely=0.2)
 
-    role_label = ctk.CTkLabel(name_box, text="Student", text_color="black", font=("Times New Roman", 22))
-    role_label.place(relx=0.02, rely=0.75, anchor="w")
+    time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
+    time_label.place(relx=0.07, rely=0.2)
+    update_date()
 
-    info_box = ctk.CTkFrame(user_page, width=1600, height=500, fg_color="white", corner_radius=20, border_width=5, border_color="royal blue")
-    info_box.place(x=50, y=250)
+    profile = ctk.CTkFrame(user_page, width=(1100), height=(150), fg_color="white",
+                      corner_radius=15)
+    profile.place(x=(0.15 * ww), y=(0.2 * wh))
 
-    borrowed_books_frame = ctk.CTkFrame(info_box, fg_color="royalblue", corner_radius=10)
-    borrowed_books_frame.place(relx=0.5, rely=0.05, anchor="n")
+    profile_image = ctk.CTkLabel(profile, text='', image=person_image)
+    profile_image.place(relx=0.05, rely=0.2)
 
-    borrowed_books_label = ctk.CTkLabel(borrowed_books_frame, text="Current Borrowed Books", text_color="black", font=("Times New Roman", 30, "bold"))
-    borrowed_books_label.place(relx=0.5, rely=0.5, anchor="center")
+    Name = ctk.CTkLabel(profile, text=profileInfo[0][0][1], font=("Arial", 32, "bold"), text_color="black")
+    Name.place(relx=0.15, rely=0.1)
 
-    container_frame = ctk.CTkFrame(info_box, fg_color="white")
-    container_frame.place(relx=0.5, rely=0.3, anchor="n", relwidth=0.9, relheight=0.6)
+    IdNum = ctk.CTkLabel(profile, text=profileInfo[0][0][3], font=("Arial", 25), text_color="black")
+    IdNum.place(relx=0.15, rely=0.4)
 
-    left_container = ctk.CTkFrame(container_frame, fg_color="white", corner_radius=20)
-    left_container.place(relx=0.25, rely=0.5, anchor="center", relwidth=0.45, relheight=1)
+    Role = ctk.CTkLabel(profile, text='Student', font=("Arial", 25), text_color="black")
+    Role.place(relx=0.1503, rely=0.6)
 
-    separator = ctk.CTkFrame(container_frame, width=2, fg_color="gray")
-    separator.place(relx=0.5, rely=0, relheight=1)
+    current_books_container = ctk.CTkFrame(user_page, width=(1110), height=(0.46 * wh), fg_color="white", border_color='royal blue', border_width=10,
+                      corner_radius=15)
+    current_books_container.place(x=(0.51 * ww), y=(0.65 * wh), anchor='center')
 
-    right_container = ctk.CTkFrame(container_frame, fg_color="white", corner_radius=20)
-    right_container.place(relx=0.75, rely=0.5, anchor="center", relwidth=0.45, relheight=1)
+    current_frame = ctk.CTkFrame(current_books_container, width=(300), height=(50), fg_color="blue",
+                      corner_radius=20)
+    current_frame.place(relx=0.5, rely=0.03, anchor='n')
 
-    penalized = False
+    current_books_label = ctk.CTkLabel(current_frame, text='Current Borrowed Books', font=("Arial", 20, "bold"), text_color="black")
+    current_books_label.place(relx=0.5, rely=0.5, anchor='center')
 
-    for index, book in enumerate(borrowed_books):
-        target_container = left_container if index % 2 == 0 else right_container
-        book_frame = ctk.CTkFrame(target_container, width=350, height=180, fg_color="white", corner_radius=10)
-        book_frame.place(relx=0.5, rely=0.2 + (index * 0.4), anchor="center")
+    divisor = ctk.CTkFrame(current_books_container, width=5, height=275, fg_color="light gray", corner_radius=5)
+    divisor.place(relx=0.5, rely=0.55, anchor='center')
+    if len(profileInfo[2]) > 0:  # Check if at least one book exists
+        book_image1 = ctk.CTkImage(Image.open(BytesIO(profileInfo[2][0][2])), size=(100, 150))
+        book_cover_left = ctk.CTkLabel(current_books_container, text='', image=book_image1)
+        book_cover_left.place(relx=0.1, rely=0.3)
 
-        book_image = load_image("book1.jpeg")
-        if book_image:
-            image_label = ctk.CTkLabel(book_frame, image=book_image, text="")
-            image_label.image = book_image
-            image_label.place(relx=0.1, rely=0.5, anchor="w")
+        book_author_left = ctk.CTkLabel(current_books_container, text=f'By {profileInfo[2][0][1]}', font=("Arial", 18), text_color="black")
+        book_author_left.place(relx=0.2, rely=0.45)
 
-        title_label = ctk.CTkLabel(book_frame, text=book['title'], text_color="black", font=("Times New Roman", 20, "bold"))
-        title_label.place(relx=0.4, rely=0.2, anchor="w")
+        book_title_left = ctk.CTkLabel(current_books_container, text=profileInfo[2][0][0], font=("Arial", 24, "bold"), text_color="black", wraplength=300)
+        book_title_left.place(relx=0.2, rely=0.30)
 
-        author_label = ctk.CTkLabel(book_frame, text=f"by {book['author']}", text_color="black", font=("Times New Roman", 16))
-        author_label.place(relx=0.4, rely=0.4, anchor="w")
+        borrowed_date_left = ctk.CTkLabel(current_books_container, text=f'Borrowed: {profileInfo[1][0][1]}', font=("Arial", 18), text_color="black")
+        borrowed_date_left.place(relx=0.2, rely=0.8)
 
-        borrowed_date_label = ctk.CTkLabel(book_frame, text=f"Borrowed: {book['borrowed_date']}", text_color="black", font=("Times New Roman", 15))
-        borrowed_date_label.place(relx=0.4, rely=0.55, anchor="w")
+    if len(profileInfo[2]) > 1:  # Check if a second book exists
+        book_image2 = ctk.CTkImage(Image.open(BytesIO(profileInfo[2][1][2])), size=(100, 150))
+        book_cover_right = ctk.CTkLabel(current_books_container, text='', image=book_image2)
+        book_cover_right.place(relx=0.6, rely=0.3)
 
-        if display_due_date(book_frame, book, returned=False):
-            penalized = True
+        book_title_right = ctk.CTkLabel(current_books_container, text=profileInfo[2][1][0], font=("Arial", 24, "bold"), text_color="black", wraplength=300)
+        book_title_right.place(relx=0.7, rely=0.30)
 
-    if penalized:
-        penalized_label = ctk.CTkLabel(user_page, text="Penalized", text_color="red", font=("Arial", 16, "bold"))
-        penalized_label.place(relx=0.5, rely=0.9, anchor="center")
+        book_author_right = ctk.CTkLabel(current_books_container, text=f'By {profileInfo[2][1][1]}', font=("Arial", 18), text_color="black")
+        book_author_right.place(relx=0.7, rely=0.45)
+
+        borrowed_date_right = ctk.CTkLabel(current_books_container, text=f'Borrowed: {profileInfo[1][1][1]}', font=("Arial", 18), text_color="black")    
+        borrowed_date_right.place(relx=0.7, rely=0.8)
+
+    penalty_button = ctk.CTkButton(
+    user_page, 
+    text="PENALTY",
+    font=("Arial", 24, "bold"), 
+    text_color="white",
+    fg_color="red",  # Background color
+    hover_color="darkred",  # Hover effect
+    corner_radius=20,
+    border_width=15,
+    border_color="red",
+    width=int(0.2 * ww),
+    height=int(0.05 * wh),
+    command= lambda: penaltyPage(content)  # Function to execute on click
+)
+
+# Place the button at the same position
+    penalty_button.place(x=(0.5 * ww), y=(0.91 * wh), anchor="center")
