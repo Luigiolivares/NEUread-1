@@ -65,7 +65,7 @@ def Main_search_page(content):
         secondSectionNum = 0
         genresNum -= num
 
-        # Remove previous book buttons
+        # Remove previous book buttons 
         for button, y in book_buttons:
             button.destroy()
         book_buttons.clear()  # Reset list
@@ -75,8 +75,8 @@ def Main_search_page(content):
         firstGenres = booksOutput(genres[genresNum], "firstSectionNum", 0)
         secondGenres = booksOutput(genres[genresNum + 1], "secondSectionNum", 0)
         # Print genres and books for debugging
-        showBooks(secondGenres, 0.775)
-        showBooks(firstGenres, 0.30)
+        showBooks(secondGenres, 0.775, True)
+        showBooks(firstGenres, 0.30, True)
         # Hide Prev button if at the first genre
         firstPrevButton.place_forget()
         secondPrevButton.place_forget()
@@ -117,15 +117,14 @@ def Main_search_page(content):
             prevButton.place_forget()
         else:
             print("pwede pa")
-            print(sectionVar - num)
             prevButton.place(relx=back_x, rely=back_y, anchor= 'e')
         try:
             # Fetch books
             books = booksOutput(genre, sectionName, num)
             if sectionName == "firstSectionNum":
-                showBooks(books, 0.30)
+                showBooks(books, 0.30, True)
             elif sectionName == "secondSectionNum":
-                showBooks(books, 0.775)
+                showBooks(books, 0.775, True)
             if len(books) == 3:
                 nextButton.place(relx=next_x, rely=next_y,anchor= 'w')
             else:
@@ -147,10 +146,6 @@ def Main_search_page(content):
     search_bar = ctk.CTkEntry(search_border, width=750, height=70, corner_radius=30, bg_color='white', fg_color='white',
                               text_color="black", placeholder_text="Search bar", font=("Arial", 20))
     search_bar.place(relx=0.5, rely=0.5, anchor="center")
-
-    # Create the search button inside the search bar
-    search_button = ctk.CTkButton(search_bar, text='', image=search_image, width=75, fg_color='white')
-    search_button.place(relx=0.98, rely=0.5, anchor='e')
 
     # Frame for all books (already exists)
     books = ctk.CTkFrame(content, width=1400, height=650, fg_color="white", 
@@ -177,7 +172,7 @@ def Main_search_page(content):
 
     genre_back_button = ctk.CTkButton(books, text='', image= back_image, bg_color="white", width=50, fg_color="white", command = lambda: genresButton(4, genre_next_button, genre_back_button, 0.97, 0.05, 0.93, 0.05, "ne", "ne", top_back_book, bot_back_book, top_next_book, bot_next_book))
 # Books (placed where they were inside `top_books` and `bot_books`)
-    def showBooks(bookArray, y):
+    def showBooks(bookArray, y, forGenre):
             # Keep track of book buttons and labels globally
         global book_buttons, genre_labels
 
@@ -185,12 +180,13 @@ def Main_search_page(content):
         for label in genre_labels:
             label.destroy()
         genre_labels.clear()  # Reset list
-        positions = [(0.2, y), (0.5, y), (0.8, y)]  # Positions for top books
-        top_label = ctk.CTkLabel(books, text=genres[genresNum], font=("Arial", 28, "bold"), text_color="grey")
-        top_label.place(relx=0.05, rely=0.060, anchor="w")
-        bot_label = ctk.CTkLabel(books, text=genres[genresNum + 1], font=("Arial", 28, "bold"), text_color="grey")
-        bot_label.place(relx=0.05, rely=0.53, anchor="w")
-        genre_labels.extend([top_label, bot_label])
+        positions = [(0.2, y), (0.5, y), (0.8, y)] # Positions for top books
+        if forGenre:
+            top_label = ctk.CTkLabel(books, text=genres[genresNum], font=("Arial", 28, "bold"), text_color="grey")
+            top_label.place(relx=0.05, rely=0.060, anchor="w")
+            bot_label = ctk.CTkLabel(books, text=genres[genresNum + 1], font=("Arial", 28, "bold"), text_color="grey")
+            bot_label.place(relx=0.05, rely=0.53, anchor="w")
+            genre_labels.extend([top_label, bot_label])
         for i, (id, blob, title) in enumerate(bookArray):
             try:
                 # Load image from binary data
@@ -205,20 +201,44 @@ def Main_search_page(content):
                 books, image=ctk_image, compound="top", 
                 fg_color="white", hover_color="lightblue", command = lambda id=id: book_profile(content, id)
             )
-            print(id)
             titleLabel = ctk.CTkLabel(books, text=title, font=("Arial", 10, "bold"), text_color="grey")
             titleLabel.place(relx=positions[i][0], rely=(positions[i][1])+0.2, anchor="center")
             genre_labels.extend([titleLabel])
             # Place button using predefined positions
             book_button.place(relx=positions[i][0], rely=(positions[i][1]), anchor="center")
             book_button.image = ctk_image  # Keep reference to prevent garbage collection
-            
             book_buttons.append((book_button, y))
             # Fetch books from two genres
     firstGenres = booksOutput(genres[genresNum], "firstSectionNum", 0)
     secondGenres = booksOutput(genres[genresNum + 1], "secondSectionNum", 0)
     # Print genres and books for debugging
-    showBooks(secondGenres, 0.775)
-    showBooks(firstGenres, 0.30)
+    showBooks(secondGenres, 0.775, True)
+    showBooks(firstGenres, 0.30, True)
 
-    ### LOGICCCCCCCCC ############
+    ### SA MAY LITERAL NA SEARCH NAMAN ############
+    def searchTitle(searchedItem, num):
+        for widget in books.winfo_children():
+            widget.destroy()
+
+        searchNum = num  # Unused in current code, can be removed if unnecessary
+        bookArray = searchBooks("Title", searchedItem, 6, searchNum)
+        searchNum = searchNum + 6
+        print(" ######, ",(searchNum + 6), searchNum )
+
+    # Show first 3 books (if available)
+        print("length of the books Searched: ", len(bookArray))
+        showBooks(bookArray[(searchNum-6): (searchNum - 3)], 0.30, False)
+    # Show next 3 books if the array has more than 3 books
+        if len(bookArray) > 3:
+            showBooks(bookArray[(searchNum-3): searchNum], 0.775, False)
+        if len(bookArray) >= 6:
+            search_next_button = ctk.CTkButton(books, text='', image=next_image, bg_color="white", width=50, fg_color="white", command= lambda: searchTitle(searchedItem, searchNum))
+            search_next_button.place(relx=0.97, rely=0.05, anchor='ne')
+        if searchNum > 6:
+            search_back_button = ctk.CTkButton(books, text='', image= back_image, bg_color="white", width=50, fg_color="white", command= lambda: searchTitle(searchedItem, (searchNum - 12)))
+            search_back_button.place(relx=0.93, rely=0.05, anchor='ne')
+    def enterSearch():
+        input = search_bar.get()
+        searchTitle(input, 0)
+    search_button = ctk.CTkButton(search_bar, text='', image=search_image, width=75, fg_color='white', command=enterSearch)
+    search_button.place(relx=0.98, rely=0.5, anchor='e')

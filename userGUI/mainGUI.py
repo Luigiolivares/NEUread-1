@@ -46,14 +46,7 @@ def start_neuread_app(RFID, root, return_to_idle):
 
     # Sample Profile Information
     profileInfo = getUserInfo(RFID)
-
-    # Function to Switch to Main User Page
-    def open_main_page():
-        entry_page.destroy()
-        Main_user_page(content, profileInfo)
-        sidebar.pack(side='left', fill='y')
-        entry_page.destroy()
-
+    print(RFID)
     # Sidebar Buttons
  # Load Sidebar Icons
     button1_icon = ImageTk.PhotoImage(Image.open("btn1.png").resize((60,60)))
@@ -64,11 +57,11 @@ def start_neuread_app(RFID, root, return_to_idle):
     button6_icon = ImageTk.PhotoImage(Image.open("btn6.png").resize((60,60)))
     # Track the currently active button
 
-    button1 = tk.Button(sidebar, command=lambda: Main_user_page(content, profileInfo), image=button1_icon, compound='left', bg='#004AAD', bd=0) 
+    button1 = tk.Button(sidebar, command=lambda: Main_user_page(content, RFID), image=button1_icon, compound='left', bg='#004AAD', bd=0) 
     button1.image = button1_icon
     button1.pack(fill='x', expand =True, pady=5)
     
-    button2 = tk.Button(sidebar, command=lambda: Main_borrow_return_page(content, window_width, window_height, profileInfo[0][0][0], root), image=button2_icon, compound='left', bg='#004AAD', bd=0)
+    button2 = tk.Button(sidebar, command=lambda: Main_borrow_return_page(content, profileInfo[0][0][0], root), image=button2_icon, compound='left', bg='#004AAD', bd=0)
     button2.image = button2_icon
     button2.pack(fill='x', expand=True, pady=5)
     
@@ -89,19 +82,20 @@ def start_neuread_app(RFID, root, return_to_idle):
     button6.pack(fill="x", expand=True, pady=5)
 
     # Entry Page (Login Screen)
-    #def entry_page_screen():
-        # Background Image
-    entry_page.image_path = image_path
-    bg_image = tk.Label(entry_page, image = image_path)
-    bg_image.place(x=0, y=0)
+    def proceedProfile(event, popUp):
+        if event.widget == popUp:
+            Main_user_page(content, RFID)
+            popUp.unbind("<Button-1>")
+            popUp.destroy()
+    pop_up_page = tk.Frame(content, width=500, height=300, bg="dark blue")
+    pop_up_page.pack(fill="both", expand=True)
 
-        # Welcome Text
-    font_label = tkFont.Font(family="Poppins Bold", size=50)
-    introText = f"Welcome to NEURead,\n {profileInfo[0][0][1]}"
-    label = tk.Label(entry_page, text=introText, font=font_label, bg="white")
-    label.place(x=(window_width * 0.26), y=(0.32 * window_height))
+    pop_up_label = tk.Label(pop_up_page, text="Welcome to NEURead!", fg="white", font=("Arial", 60, "bold"), bg="dark blue")
+    pop_up_label.place(relx=0.5, rely=0.45, anchor="center")
 
-        # Login Button
-    font_button = tkFont.Font(family="Poppins Bold", size=15)
-    button = tk.Button(entry_page, text='Login', font=font_button, bg="#004AAD", fg="white", width=18, command=open_main_page)
-    button.place(x=(0.40 * window_width), y=(0.46 * window_width))
+    pop_up_label2 = tk.Label(pop_up_page, text="Please touch the screen to continue", fg="white", font=("Arial", 20, "bold"), bg="dark blue")
+    pop_up_label2.place(relx=0.5, rely=0.53, anchor="center")
+
+    pop_up_page.bind("<Button-1>", lambda event: proceedProfile(event, pop_up_page))
+
+    sidebar.pack(side='left', fill='y')

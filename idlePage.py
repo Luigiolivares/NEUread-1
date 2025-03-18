@@ -6,12 +6,12 @@ from bnd import *
 root = tk.Tk()
 root.title("Idle Page")
 root.attributes('-fullscreen', True)
-
 window_width = root.winfo_screenwidth()
 window_height = root.winfo_screenheight() 
+print(window_width, window_height)
 last_scan_time = 0
 active = False
-rfid_data = "0010567289"
+rfid_data = "0011188818"
 def create_idle_page():
     """Creates the idle page UI."""
     global idle_frame
@@ -32,33 +32,27 @@ def return_to_idle():
     active = False
     create_idle_page()
 
-def is_rfid_scan():
-    global last_scan_time
-    current_time = time.time()
-    if current_time - last_scan_time < 0.1:
-        last_scan_time = current_time
-        return True
-    last_scan_time = current_time
-    return False
-
 def on_key_press(event):
-    #if not is_rfid_scan():
-    #    return 
     global active
     global rfid_data
     global idle_frame
     if active:
         return
-    if event.keysym == "l":
+    if event.keysym == "Return":
         print("pressing")
         if rfid_data:
             if getUserInfo(rfid_data):
-                active = True
-                print(f"RFID Scanned: {rfid_data}")
-                root.unbind("<Key>")
-                start_neuread_app(rfid_data, root, return_to_idle)
-                rfid_data = ""  # Reset buffer
-                idle_frame.destroy()
+                try:
+                    active = True
+                    print(f"RFID Scanned: {rfid_data}")
+                    root.unbind("<Key>")
+                    start_neuread_app(rfid_data, root, return_to_idle)
+                    print(rfid_data)
+                    rfid_data = ""  # Reset buffer
+                    idle_frame.destroy()
+                except Exception as e:
+                    rfid_data = ""
+                    return None
             else:
                 rfid_data = ""
                 print("no user as such")
