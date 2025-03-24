@@ -1,9 +1,9 @@
 import smtplib
-import schedule
-import time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-
+from email.mime.base import MIMEBase
+from email import encoders
+import os
 # Function to send an email
 def send_Borrow_Info(RECIPIENT_EMAIL):
     # Email Credentials
@@ -18,7 +18,6 @@ def send_Deadline_Info(RECIPIENT_EMAIL):
     # Email Credentials
     SENDER_EMAIL = "neuread.neuis@gmail.com"
     SENDER_PASSWORD = "agiv uhqq tlhg sjre"
-    RECIPIENT_EMAIL = "yourFranzkafka@gmail.com"
 
     subject = "New Borrow"
     body = "nag borrow ka ng book noh?"

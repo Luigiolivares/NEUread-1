@@ -1,5 +1,10 @@
 import mysql.connector
 from sendEmail import *
+import pandas as pd
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
 db = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -52,14 +57,15 @@ def showBorrowHistory(RFID, nthTo, nthFrom):
     
     allBooks = []
     for book_id, date_borrowed, date_returned in items:
-        mycursor.execute("SELECT Title, Author, Book_Cover, Availability, Year_Publication, Book_Address FROM books WHERE book_ID = %s", (book_id,))
+        mycursor.execute("SELECT Title, Author, Book_Cover FROM books WHERE book_ID = %s", (book_id,))
         book_info = mycursor.fetchone()  # Fetch one book's info
-        
         if book_info:  # If book info is found, combine data
             title, author, book_cover = book_info
-            allBooks.append([book_cover, title, author, date_borrowed, date_returned])
+            allBooks.append([book_cover, title, author, date_borrowed, date_returned, book_id])
     return allBooks
-
+def penalty(RFID, num):
+    mycursor.execute("UPDATE users SET Penalty = %s WHERE RFID = %s", (num, RFID))
+    db.commit()
 def showGenres(nthTo, nthFrom):
     mycursor.execute("SELECT DISTINCT `Genre` FROM books LIMIT %s OFFSET %s", (nthTo, nthFrom))
     return mycursor.fetchall()
@@ -91,7 +97,7 @@ def returnBook(RFID, Book_ID, Date_returned):
 
     # Update the books table to set availability back to 1 (available)
     mycursor.execute(
-        "UPDATE books SET availability = 1 WHERE Book_ID = %s",
+        "UPDATE books SET availability = 0 WHERE Book_ID = %s",
         (Book_ID,)
     )
     
@@ -106,7 +112,7 @@ def showWhoToEmail():
 
     for row in borrow_IDs: 
         rfid = row[0]  # Assuming RFID is in the second column
-
+        penalty(rfid, 1)
         # Secure query to fetch email
         mycursor.execute("SELECT DISTINCT Email FROM users WHERE RFID = %s;", (rfid,))
         result = mycursor.fetchone()  # Get the single email result
@@ -116,4 +122,98 @@ def showWhoToEmail():
 
     print(listGmail)
     return listGmail
-print (getUserInfo("0010516239")[1])
+def getUserAndBookNum():
+        # Query 1: Count all rows in the table
+        mycursor.execute("SELECT COUNT(*) FROM users;")
+        total_UserRows = mycursor.fetchone()[0]
+        mycursor.execute("SELECT COUNT(*) FROM books;")
+        total_BookRows = mycursor.fetchone()[0]
+        mycursor.execute("SELECT COUNT(*) FROM users where Penalty = '1';")
+        total_PenaltyRows = mycursor.fetchone()[0]
+        return total_UserRows, total_BookRows, total_PenaltyRows
+
+def BnRcount_rows(start_date, end_date):
+    query = """
+    SELECT COUNT(*) 
+    FROM borrowed_books 
+    WHERE Date_borrowed BETWEEN %s AND %s;
+    """
+    mycursor.execute(query, (start_date, end_date))
+    filtered_BorrowData = mycursor.fetchone()[0]
+
+    query = """
+    SELECT COUNT(*) 
+    FROM borrowed_books 
+    WHERE Date_returned BETWEEN %s AND %s;
+    """
+    mycursor.execute(query, (start_date, end_date))
+    filtered_ReturnedData = mycursor.fetchone()[0]
+
+    return filtered_BorrowData, filtered_ReturnedData
+def export_to_excel(start_date, end_date):
+    query = """
+    SELECT * FROM borrowed_books
+    WHERE Date_borrowed BETWEEN %s AND %s;
+    """
+    mycursor.execute(query, (start_date, end_date))
+    
+    # Fetch data
+    rows = mycursor.fetchall()
+    
+    # Get column names
+    column_names = [desc[0] for desc in mycursor.description]
+
+    # Convert to DataFrame
+    df = pd.DataFrame(rows, columns=column_names)
+
+    # Define file name
+    filename = "borrowed_books_export.xlsx"
+
+    # Export to Excel (in the same directory as the script)
+    df.to_excel(filename, index=False)
+
+    return filename
+
+def send_email_with_attachment(RECIPIENT_EMAIL, start_date, end_date):
+    # Email Credentials
+    SENDER_EMAIL = "neuread.neuis@gmail.com"
+    SENDER_PASSWORD = "agiv uhqq tlhg sjre"
+
+    subject = "Borrowed Books Data Export"
+    body = f"Here is the exported data of borrowed books from {start_date} to {end_date}."
+
+    # Export the data
+    filename = export_to_excel(start_date, end_date)
+    print(filename)
+    if filename is None:
+        print("❌ Failed to export data. Email not sent.")
+        return
+
+    # Create the email
+    msg = MIMEMultipart()
+    msg["From"] = SENDER_EMAIL
+    msg["To"] = RECIPIENT_EMAIL
+    msg["Subject"] = subject
+    msg.attach(MIMEText(body, "plain"))
+
+    # Attach the Excel file
+    with open(filename, "rb") as attachment:
+        part = MIMEBase("application", "octet-stream")
+        part.set_payload(attachment.read())
+
+    encoders.encode_base64(part)
+    part.add_header("Content-Disposition", f"attachment; filename={os.path.basename(filename)}")
+    msg.attach(part)
+
+    try:
+        # Connect to Gmail SMTP server
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.starttls()
+        server.login(SENDER_EMAIL, SENDER_PASSWORD)
+        server.sendmail(SENDER_EMAIL, RECIPIENT_EMAIL, msg.as_string())
+        server.quit()
+
+        print(f"✅ Email with attachment sent successfully to {RECIPIENT_EMAIL}!")
+
+    except Exception as e:
+        print(f"❌ Failed to send email: {e}")

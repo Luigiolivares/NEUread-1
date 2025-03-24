@@ -5,9 +5,9 @@ from datetime import datetime
 import pytz
 from PIL import Image 
 from io import BytesIO
-from penaltyRemoved import *
 from bnd import *
-def Main_user_page(content, RFID):
+import bcrypt
+def Main_user_page(content, RFID, root):
     person = open("admin_pic.png", "rb")
     ww = content.winfo_screenwidth()
     wh = content.winfo_screenheight()
@@ -112,8 +112,144 @@ def Main_user_page(content, RFID):
     border_color="red",
     width=int(0.2 * ww),
     height=int(0.05 * wh),
-    command= lambda: penaltyPage(content)  # Function to execute on click
+    command= lambda: penalty1(content, root, RFID)# Function to execute on click
 )
+    print(profileInfo[0][0][5])
+    if profileInfo[0][0][5] == 1:
+        penalty_button.place(x=(0.5 * ww), y=(0.94 * wh), anchor="center")
+################################################################################
+################################################################################
+################## PENALTY PAGE, KASI BAWAL DAW CIRCULAR IMPORT ################
+################################################################################
+################################################################################
+lib = open("admin_pic.png", "rb") 
+button = open("next.png", "rb")
+rfid_data = ""
+def penalty1(content, root, RFID):
+    admin = ctk.CTkImage(Image.open(lib), size=((300), (300))) 
+    ww = content.winfo_screenwidth() 
+    wh = content.winfo_screenheight() 
+    penalty1_page = tk.Frame(content) 
+    penalty1_page.place(width=ww, height=wh) 
 
-# Place the button at the same position
-    penalty_button.place(x=(0.5 * ww), y=(0.91 * wh), anchor="center")
+    time_border = ctk.CTkFrame(penalty1_page, width=(0.08 * ww), height=(0.067 * wh), border_color="azure3",
+                               fg_color="azure3", corner_radius=13, border_width=15) 
+    time_border.place(x=(0.81 * ww), y=(0.05 * wh)) 
+    
+    date_border = ctk.CTkFrame(penalty1_page, width=(0.13 * ww), height=(0.069 * wh), fg_color="azure3", corner_radius=13, border_width=15, border_color="azure3") 
+    date_border.place(x=(0.11 * ww), y=(0.05 * wh)) 
+    def update_date(): 
+        ph_timezone = pytz.timezone("Asia/Manila") 
+        current_time = datetime.now(ph_timezone) 
+        formatted_date = current_time.strftime("%B %d, %Y") 
+        formatted_time = current_time.strftime("%I:%M %p") 
+        date_label.configure(text=formatted_date) 
+        time_label.configure(text=formatted_time) 
+        penalty1_page.after(1000, update_date) 
+        
+    date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black") 
+    date_label.place(relx=0.07, rely=0.2) 
+    
+    time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black") 
+    time_label.place(relx=0.07, rely=0.2)
+    root.bind("<Key>", lambda event: keyPressed(event, content, root, RFID))
+    
+    update_date() 
+
+    laman = ctk.CTkFrame(penalty1_page, width=(1100), height=(0.75 * wh), fg_color="white", corner_radius=15) 
+    laman.place(x=(0.15 * ww), y=(0.15 * wh)) 
+
+    admin_image = ctk.CTkLabel(laman, text='', image=admin) 
+    admin_image.place(relx=0.5, rely=0.35, anchor="center") 
+
+    request = ctk.CTkLabel(laman, text='Please ask a librarian to tap the security card.', font=("Arial", 32), text_color="black") 
+    request.place(relx=0.5, rely=0.72, anchor="center")
+
+def keyPressed(event, content, root, RFID):
+    
+    #if not is_rfid_scan():
+        #return  # Ignore manual keyboard input
+    print("pressed key")
+    global rfid_data
+    if event.keysym == "Return":
+        if rfid_data:
+            string_data = str(rfid_data)
+            print(adminCheck(string_data), string_data)
+            if adminCheck(string_data):
+                print(f"ADMIN Entered")
+                root.unbind("<Key>")
+                penalty2(content, RFID, root)
+            else:
+                print("Admin not found")
+        rfid_data += event.char
+    else:
+        rfid_data += event.char
+def penalty2(content, RFID, root):
+    ww = content.winfo_screenwidth() 
+    wh = content.winfo_screenheight() 
+    passwd = "$2b$12$qc/cxFV9Dze05iJ4kN4FvOHi00p7oFI.cYCa3xUCKVfXTJzKGrJ3e"
+    admin = ctk.CTkImage(Image.open(lib), size=((0.2 * ww), (0.35 * wh))) 
+    btn = ctk.CTkImage(Image.open(button), size=((0.033 * ww), (0.06 * wh))) 
+
+    penalty1_page = tk.Frame(content) 
+    penalty1_page.place(width=ww, height=wh) 
+
+    time_border = ctk.CTkFrame(penalty1_page, width=(0.08 * ww), height=(0.067 * wh), border_color="azure3",
+                               fg_color="azure3", corner_radius=13, border_width=15) 
+    time_border.place(x=(0.81 * ww), y=(0.05 * wh)) 
+    
+    date_border = ctk.CTkFrame(penalty1_page, width=(0.13 * ww), height=(0.069 * wh), fg_color="azure3", corner_radius=13, border_width=15, border_color="azure3") 
+    date_border.place(x=(0.11 * ww), y=(0.05 * wh)) 
+    def update_date(): 
+        ph_timezone = pytz.timezone("Asia/Manila") 
+        current_time = datetime.now(ph_timezone) 
+        formatted_date = current_time.strftime("%B %d, %Y") 
+        formatted_time = current_time.strftime("%I:%M %p") 
+        date_label.configure(text=formatted_date) 
+        time_label.configure(text=formatted_time) 
+        penalty1_page.after(1000, update_date) 
+        
+    date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black") 
+    date_label.place(relx=0.07, rely=0.2) 
+    
+    time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black") 
+    time_label.place(relx=0.07, rely=0.2) 
+    
+    update_date() 
+
+    laman = ctk.CTkFrame(penalty1_page, width=(1100), height=(0.75 * wh), fg_color="white", corner_radius=15) 
+    laman.place(x=(0.15 * ww), y=(0.15 * wh)) 
+
+    admin_image = ctk.CTkLabel(laman, text='', image=admin) 
+    admin_image.place(relx=0.5, rely=0.35, anchor="center") 
+
+    password = ctk.CTkEntry(laman, width=750, height=70, corner_radius=50, fg_color='white',
+                              text_color="black", placeholder_text="Enter Security Password", font=("Arial", 20), show="•") 
+    password.place(relx=0.5, rely=0.72, anchor="center")
+    def submit_password():
+        user_input = password.get()
+        access = bcrypt.checkpw(user_input.encode(), passwd.encode())
+        if access:
+            penalty(RFID, 0)
+            print("Entered Password Correct:", user_input)
+            pop_up_page = tk.Frame(penalty1_page, width=500, height=300, bg="dark blue")
+            pop_up_page.pack(fill="both", expand=True)
+
+            # Bind the frame touch event, passing the frame as an argument
+            pop_up_page.bind("<Button-1>", lambda event: on_frame_touch(event, pop_up_page, content, root))
+
+            pop_up_label = tk.Label(pop_up_page, text='Penalty removed!', fg="white", font=("Arial", 55, "bold"), 
+                            bg="dark blue", wraplength=1500)
+            pop_up_label.place(relx=0.5, rely=0.45, anchor="center")
+
+            pop_up_label2 = tk.Label(pop_up_page, text="Please touch the screen to continue", fg="white", 
+                             font=("Arial", 20, "bold"), bg="dark blue")
+            pop_up_label2.place(relx=0.5, rely=0.53, anchor="center")
+    def on_frame_touch(event, frame, content, root):
+        if event.widget == frame:
+            frame.unbind("<Button-1>")
+            Main_user_page(content, RFID, root)
+    entry_button = ctk.CTkButton(password, text='', image=btn, width=(0.05 * ww), fg_color='white', command = submit_password)
+    entry_button.place(relx=0.97, rely=0.5, anchor='e')
+    cancel_btn = ctk.CTkButton(laman, text='Cancel', font=("Arial", 32, "bold"), text_color="White", fg_color="darkblue", corner_radius=20, width=50, height=50) 
+    cancel_btn.place(relx=0.5, rely=0.85, anchor="center")

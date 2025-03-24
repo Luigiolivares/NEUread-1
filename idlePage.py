@@ -1,5 +1,6 @@
 import tkinter as tk
 from userGUI.mainGUI import start_neuread_app
+from userGUI.adminPanel import admin
 import time
 from bnd import *
 # Create the main application window
@@ -8,10 +9,9 @@ root.title("Idle Page")
 root.attributes('-fullscreen', True)
 window_width = root.winfo_screenwidth()
 window_height = root.winfo_screenheight() 
-print(window_width, window_height)
 last_scan_time = 0
 active = False
-rfid_data = "0011188818"
+rfid_data = "0011158817"
 def create_idle_page():
     """Creates the idle page UI."""
     global idle_frame
@@ -41,15 +41,20 @@ def on_key_press(event):
     if event.keysym == "Return":
         print("pressing")
         if rfid_data:
-            if getUserInfo(rfid_data):
+            if getUserInfo(rfid_data) != ([], [], []):
                 try:
-                    active = True
-                    print(f"RFID Scanned: {rfid_data}")
-                    root.unbind("<Key>")
-                    start_neuread_app(rfid_data, root, return_to_idle)
-                    print(rfid_data)
-                    rfid_data = ""  # Reset buffer
-                    idle_frame.destroy()
+                    if getUserInfo(rfid_data)[0][0][2] == "Admin":
+                        root.unbind("<Key>")
+                        rfid_data = ""  # Reset buffer
+                        admin(root, return_to_idle)
+                    else:
+                        active = True
+                        print(f"RFID Scanned: {rfid_data}")
+                        root.unbind("<Key>")
+                        start_neuread_app(rfid_data, root, return_to_idle)
+                        print(rfid_data)
+                        rfid_data = ""  # Reset buffer
+                        idle_frame.destroy()
                 except Exception as e:
                     rfid_data = ""
                     return None
