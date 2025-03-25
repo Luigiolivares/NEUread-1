@@ -255,7 +255,7 @@ def completeTransaction(RFID, content, root):
     pop_up_page.pack(fill="both", expand=True)
 
     # Bind the frame touch event, passing the frame as an argument
-    pop_up_page.bind("<Button-1>", lambda event: on_frame_touch(event, pop_up_page, content, ww, wh, userRFID, root))
+    pop_up_page.bind("<Button-1>", lambda event: on_frame_touch(event, pop_up_page, content, userRFID, root))
 
     pop_up_label = tk.Label(pop_up_page, text=f'"{Title}"', fg="white", font=("Arial", 55, "bold"), 
                             bg="dark blue", wraplength=1500)
@@ -288,9 +288,9 @@ def completeTransaction(RFID, content, root):
                                  bg="dark blue")
         pop_up_label5.place(relx=0.5, rely=0.30, anchor="center")
 
-def on_frame_touch(event, frame, content, screenWidth, screenHeight, userID, main):
+def on_frame_touch(event, frame, content, userID, main):
     if event.widget == frame:
-        Main_borrow_return_page(content, screenWidth, screenHeight, userID, main)
+        Main_borrow_return_page(content, userID, main)
 def is_rfid_scan():
     global last_scan_time
     current_time = time.time()

@@ -18,12 +18,10 @@ from user_Profile import Main_user_page
 from borrow_return import Main_borrow_return_page
 from search import Main_search_page
 from history import Main_history_page
-from rules_regulation import Main_rules_page
+from rules_regulation import initiateMainReg
 from exit_function import Main_exit_page
 import sys
 import os
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from bnd import *
 def start_neuread_app(RFID, root, return_to_idle):
     # Main Containers
@@ -57,7 +55,7 @@ def start_neuread_app(RFID, root, return_to_idle):
     button6_icon = ImageTk.PhotoImage(Image.open("btn6.png").resize((60,60)))
     # Track the currently active button
 
-    button1 = tk.Button(sidebar, command=lambda: Main_user_page(content, RFID), image=button1_icon, compound='left', bg='#004AAD', bd=0) 
+    button1 = tk.Button(sidebar, command=lambda: Main_user_page(content, RFID, root), image=button1_icon, compound='left', bg='#004AAD', bd=0) 
     button1.image = button1_icon
     button1.pack(fill='x', expand =True, pady=5)
     
@@ -73,7 +71,7 @@ def start_neuread_app(RFID, root, return_to_idle):
     button4.image = button4_icon
     button4.pack(fill='x', expand=True, pady=5)
 
-    button5 = tk.Button(sidebar, command=lambda: Main_rules_page(content, window_width, window_height), image=button5_icon, compound='left', bg='#004AAD', bd=0)
+    button5 = tk.Button(sidebar, command=lambda: initiateMainReg(content), image=button5_icon, compound='left', bg='#004AAD', bd=0)
     button5.image = button5_icon
     button5.pack(fill='x', expand=True, pady=5)
 
@@ -84,9 +82,12 @@ def start_neuread_app(RFID, root, return_to_idle):
     # Entry Page (Login Screen)
     def proceedProfile(event, popUp):
         if event.widget == popUp:
-            Main_user_page(content, RFID)
+            Main_user_page(content, RFID, root)
             popUp.unbind("<Button-1>")
             popUp.destroy()
+
+    sidebar.pack(side='left', fill='y')
+    
     pop_up_page = tk.Frame(content, width=500, height=300, bg="dark blue")
     pop_up_page.pack(fill="both", expand=True)
 
@@ -94,8 +95,6 @@ def start_neuread_app(RFID, root, return_to_idle):
     pop_up_label.place(relx=0.5, rely=0.45, anchor="center")
 
     pop_up_label2 = tk.Label(pop_up_page, text="Please touch the screen to continue", fg="white", font=("Arial", 20, "bold"), bg="dark blue")
-    pop_up_label2.place(relx=0.5, rely=0.53, anchor="center")
+    pop_up_label2.place(relx=0.5, rely=0.80, anchor="center")
 
     pop_up_page.bind("<Button-1>", lambda event: proceedProfile(event, pop_up_page))
-
-    sidebar.pack(side='left', fill='y')
