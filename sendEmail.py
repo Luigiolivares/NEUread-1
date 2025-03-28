@@ -19,8 +19,8 @@ def send_Deadline_Info(RECIPIENT_EMAIL):
     SENDER_EMAIL = "neuread.neuis@gmail.com"
     SENDER_PASSWORD = "agiv uhqq tlhg sjre"
 
-    subject = "New Borrow"
-    body = "nag borrow ka ng book noh?"
+    subject = "malapit na deadline"
+    body = "malapit na deadline, balik mo na yung libro bukas ah"
     emailSend(SENDER_EMAIL, SENDER_PASSWORD, RECIPIENT_EMAIL, subject, body)
 
 def emailSend(SENDER_EMAIL, SENDER_PASSWORD, RECIPIENT_EMAIL, subject, body):

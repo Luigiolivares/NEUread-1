@@ -23,7 +23,7 @@ def create_rounded_frame(parent, width, height, radius=20):
 def create_navigation_buttons(content):
     ww = content.winfo_screenwidth()  
     wh = content.winfo_screenheight()
-    button_frame = ctk.CTkFrame(content, width=(0.50 * ww), height=80)  # Set width and height in the constructor
+    button_frame = ctk.CTkFrame(content, width=(0.50 * ww), height=80, fg_color="white")  # Set width and height in the constructor
     button_frame.place(relx=0.5, rely=0.89, anchor="center")  # Center the button frame at the bottom
 
     # Button list
@@ -31,7 +31,7 @@ def create_navigation_buttons(content):
 
     # Create buttons and ensure equal spacing
     for idx, text in enumerate(button_texts):
-        button = ctk.CTkButton(button_frame, text=text, font=("Arial", 19, "bold"), fg_color="darkblue", width=216, height=60)
+        button = ctk.CTkButton(button_frame, text=text, font=("Arial", 19, "bold"), fg_color="#004AAD", width=216, height=60)
         button.pack(side='left', padx=15, expand=True)  # Side by side, with equal padding
 
     # Assign functions to buttons
@@ -42,12 +42,37 @@ def create_navigation_buttons(content):
     button_frame.winfo_children()[4].configure(command=lambda: show_decor_page(content))
 
 def Main_rules_page(content):
+    ww = content.winfo_screenwidth()
+    wh = content.winfo_screenheight()
+    time_border = ctk.CTkFrame(content, width=(0.08 * ww), height=(0.067 * wh), fg_color="azure3", 
+                      corner_radius=13, border_width=15, border_color="azure3")
+    time_border.place(relx=0.89, rely=0.05)
+
+    date_border = ctk.CTkFrame(content, width=(0.13 * ww), height=(0.069 * wh), fg_color="azure3", 
+                      corner_radius=13, border_width=15, border_color="azure3")
+    date_border.place(relx=0.03, rely=0.05)
+
+    def update_date():
+        ph_timezone = pytz.timezone("Asia/Manila")
+        current_time = datetime.now(ph_timezone)
+        formatted_date = current_time.strftime("%B %d, %Y")
+        formatted_time = current_time.strftime("%I:%M %p")
+        date_label.configure(text=formatted_date)
+        time_label.configure(text=formatted_time)
+        content.after(1000, update_date)
+
+    date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
+    date_label.place(relx=0.07, rely=0.2)
+
+    time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
+    time_label.place(relx=0.07, rely=0.2)
+    update_date()
     round_canvas1 = create_rounded_frame(content, width=1200, height=600)  
     round_canvas1.place(relx=0.5, rely=0.46, anchor="center")  # Centered
 
     # FRAME LABEL
     label1 = tk.Label(round_canvas1, text="Library Policies & Regulations", font=("Arial", 25, "bold"), 
-                      fg="navy", bg="white")
+                      fg="#004AAD", bg="white")
     label1.place(relx=0.02, rely=0.05)  # Relative placement for better responsiveness
 
     # POLICIES TEXT
@@ -76,7 +101,7 @@ def show_borrowing_privileges_page(content):
     round_canvas2.place(relx=0.5, rely=0.46, anchor="center")  # Center the frame within the window
     # FRAME LABEL
     label2 = tk.Label(round_canvas2, text='Borrowing Privileges', font=("Arial", 25, "bold"), 
-                      fg="navy", bg="white")
+                      fg="#004AAD", bg="white")
     label2.place(relx=0.02, rely=0.05)   # Top-left cornershow_decor_page (0)
     #BORROWING TEXT
     borrowing_text = """• Circulation Books 
@@ -102,7 +127,7 @@ def show_fno_page(content):
     round_canvas3.place(relx=0.5, rely=0.46, anchor="center")  # Center the frame within the window
     # FRAME LABEL
     label3 = tk.Label(round_canvas3, text='Fines', font=("Arial", 25, "bold"), 
-                      fg="navy", bg="white")
+                      fg="#004AAD", bg="white")
     label3.place(relx=0.02, rely=0.05) # Top-left corner
     #fines TEXT
     f_text = """Materials returned late are subject to overdue fines
@@ -127,7 +152,7 @@ Payment should be made at the Cashier's Office."""
     
     # FRAME LABEL
     label4 = tk.Label(round_canvas3, text='Offenses', font=("Arial", 25, "bold"), 
-                      fg="navy", bg="white")
+                      fg="#004AAD", bg="white")
     label4.place(x=(620), y=(30))  # Top-left corner
     #offenses TEXT
     o_text = """1st offense: fine as directed
@@ -154,7 +179,7 @@ def show_lb_page(content):
     round_canvas3.place(relx=0.5, rely=0.46, anchor="center")  # Center the frame within the window
     # FRAME LABEL
     label3 = tk.Label(round_canvas3, text='Lost Book', font=("Arial", 25, "bold"), 
-                      fg="navy", bg="white")
+                      fg="#004AAD", bg="white")
     label3.place(relx=0.02, rely=0.05)  # Top-left corner
     #BORROWING TEXT
     borrowing_text = """
@@ -180,7 +205,7 @@ def show_decor_page(content):
     round_canvas4.place(relx=0.5, rely=0.46, anchor="center")  # Center the frame within the window
     # FRAME LABEL
     label4 = tk.Label(round_canvas4, text='Decorum in the Library', font=("Arial", 25, "bold"), 
-                      fg="navy", bg="white")
+                      fg="#004AAD", bg="white")
     label4.place(relx=0.02, rely=0.05)  # Top-left corner
     # POLICIES TEXT
     decor_text = """• Observe silence at all times

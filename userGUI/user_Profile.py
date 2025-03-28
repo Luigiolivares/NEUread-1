@@ -17,15 +17,15 @@ def Main_user_page(content, RFID, root):
     person_image = ctk.CTkImage(Image.open(person), size=((75), (75)))
 
     user_page = tk.Frame(content)
-    user_page.place(width=ww, height=wh)
+    user_page.place(relx=0, rely=0, relwidth=1, relheight=1)
 
     time_border = ctk.CTkFrame(user_page, width=(0.08 * ww), height=(0.067 * wh), fg_color="azure3", 
                       corner_radius=13, border_width=15, border_color="azure3")
-    time_border.place(x=(0.81 * ww), y=(0.05 * wh))
+    time_border.place(relx=0.89, rely=0.05)
 
     date_border = ctk.CTkFrame(user_page, width=(0.13 * ww), height=(0.069 * wh), fg_color="azure3", 
                       corner_radius=13, border_width=15, border_color="azure3")
-    date_border.place(x=(0.11 * ww), y=(0.05 * wh))
+    date_border.place(relx=0.03, rely=0.05)
 
     def update_date():
         ph_timezone = pytz.timezone("Asia/Manila")
@@ -45,7 +45,7 @@ def Main_user_page(content, RFID, root):
 
     profile = ctk.CTkFrame(user_page, width=(1100), height=(150), fg_color="white",
                       corner_radius=15)
-    profile.place(x=(0.15 * ww), y=(0.2 * wh))
+    profile.place(relx=0.15, rely=0.2)
 
     profile_image = ctk.CTkLabel(profile, text='', image=person_image)
     profile_image.place(relx=0.05, rely=0.2)
@@ -59,11 +59,11 @@ def Main_user_page(content, RFID, root):
     Role = ctk.CTkLabel(profile, text='Student', font=("Arial", 25), text_color="black")
     Role.place(relx=0.1503, rely=0.6)
 
-    current_books_container = ctk.CTkFrame(user_page, width=(1110), height=(0.46 * wh), fg_color="white", border_color='royal blue', border_width=10,
+    current_books_container = ctk.CTkFrame(user_page, width=(1110), height=(0.46 * wh), fg_color="white", border_color='#004AAD', border_width=10,
                       corner_radius=15)
-    current_books_container.place(x=(0.51 * ww), y=(0.65 * wh), anchor='center')
+    current_books_container.place(relx=0.5, rely=0.65, anchor='center')
 
-    current_frame = ctk.CTkFrame(current_books_container, width=(300), height=(50), fg_color="blue",
+    current_frame = ctk.CTkFrame(current_books_container, width=(300), height=(50), fg_color="#004AAD",
                       corner_radius=20)
     current_frame.place(relx=0.5, rely=0.03, anchor='n')
 
@@ -116,7 +116,7 @@ def Main_user_page(content, RFID, root):
 )
     print(profileInfo[0][0][5])
     if profileInfo[0][0][5] == 1:
-        penalty_button.place(x=(0.5 * ww), y=(0.94 * wh), anchor="center")
+        penalty_button.place(relx=0.5, rely=0.94, anchor="center")
 ################################################################################
 ################################################################################
 ################## PENALTY PAGE, KASI BAWAL DAW CIRCULAR IMPORT ################
@@ -134,10 +134,10 @@ def penalty1(content, root, RFID):
 
     time_border = ctk.CTkFrame(penalty1_page, width=(0.08 * ww), height=(0.067 * wh), border_color="azure3",
                                fg_color="azure3", corner_radius=13, border_width=15) 
-    time_border.place(x=(0.81 * ww), y=(0.05 * wh)) 
+    time_border.place(relx=0.81, rely=0.05) 
     
     date_border = ctk.CTkFrame(penalty1_page, width=(0.13 * ww), height=(0.069 * wh), fg_color="azure3", corner_radius=13, border_width=15, border_color="azure3") 
-    date_border.place(x=(0.11 * ww), y=(0.05 * wh)) 
+    date_border.place(relx=0.11, rely=0.05) 
     def update_date(): 
         ph_timezone = pytz.timezone("Asia/Manila") 
         current_time = datetime.now(ph_timezone) 
@@ -157,7 +157,7 @@ def penalty1(content, root, RFID):
     update_date() 
 
     laman = ctk.CTkFrame(penalty1_page, width=(1100), height=(0.75 * wh), fg_color="white", corner_radius=15) 
-    laman.place(x=(0.15 * ww), y=(0.15 * wh)) 
+    laman.place(relx=0.15, rely=0.15) 
 
     admin_image = ctk.CTkLabel(laman, text='', image=admin) 
     admin_image.place(relx=0.5, rely=0.35, anchor="center") 
@@ -196,10 +196,10 @@ def penalty2(content, RFID, root):
 
     time_border = ctk.CTkFrame(penalty1_page, width=(0.08 * ww), height=(0.067 * wh), border_color="azure3",
                                fg_color="azure3", corner_radius=13, border_width=15) 
-    time_border.place(x=(0.81 * ww), y=(0.05 * wh)) 
+    time_border.place(relx=0.81, rely=0.05) 
     
     date_border = ctk.CTkFrame(penalty1_page, width=(0.13 * ww), height=(0.069 * wh), fg_color="azure3", corner_radius=13, border_width=15, border_color="azure3") 
-    date_border.place(x=(0.11 * ww), y=(0.05 * wh)) 
+    date_border.place(relx=0.11, rely=0.05) 
     def update_date(): 
         ph_timezone = pytz.timezone("Asia/Manila") 
         current_time = datetime.now(ph_timezone) 
@@ -218,7 +218,7 @@ def penalty2(content, RFID, root):
     update_date() 
 
     laman = ctk.CTkFrame(penalty1_page, width=(1100), height=(0.75 * wh), fg_color="white", corner_radius=15) 
-    laman.place(x=(0.15 * ww), y=(0.15 * wh)) 
+    laman.place(relx=0.15, rely=0.15) 
 
     admin_image = ctk.CTkLabel(laman, text='', image=admin) 
     admin_image.place(relx=0.5, rely=0.35, anchor="center") 

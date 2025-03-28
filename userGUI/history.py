@@ -14,31 +14,37 @@ book_buttons = []
 
 def Main_history_page(content, RFID):
     global showBook
-    history_page = tk.Frame(content, bg="light gray")
+    history_page = tk.Frame(content)
     history_page.place(relx=0, rely=0, relwidth=1, relheight=1)
-    
-    header_frame = tk.Frame(history_page, bg="#ffffff", height=50)
-    header_frame.place(relx=0, rely=0, relwidth=1)
-    
-    # Update date function
+    ww = history_page.winfo_screenwidth()
+    wh = history_page.winfo_screenheight()
+    time_border = ctk.CTkFrame(history_page, width=(0.08 * ww), height=(0.067 * wh), fg_color="azure3", 
+                      corner_radius=13, border_width=15, border_color="azure3")
+    time_border.place(relx=0.89, rely=0.05)
+
+    date_border = ctk.CTkFrame(history_page, width=(0.13 * ww), height=(0.069 * wh), fg_color="azure3", 
+                      corner_radius=13, border_width=15, border_color="azure3")
+    date_border.place(relx=0.03, rely=0.05)
+
     def update_date():
         ph_timezone = pytz.timezone("Asia/Manila")
         current_time = datetime.now(ph_timezone)
-        formatted_time = current_time.strftime("%B %d, %Y %I:%M %p")
-        date_label.configure(text=formatted_time)
+        formatted_date = current_time.strftime("%B %d, %Y")
+        formatted_time = current_time.strftime("%I:%M %p")
+        date_label.configure(text=formatted_date)
+        time_label.configure(text=formatted_time)
         history_page.after(1000, update_date)
-    
-    date_label = ctk.CTkLabel(header_frame, font=("Arial", 20), text_color="#333333", fg_color="white")
-    date_label.place(relx=0.02, rely=0.5, anchor="w")
+
+    date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
+    date_label.place(relx=0.07, rely=0.2)
+
+    time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
+    time_label.place(relx=0.07, rely=0.2)
     update_date()
-    
-    university_label = ctk.CTkLabel(header_frame, text="New Era University", font=("Arial", 20), fg_color="white", text_color="black")
-    university_label.place(relx=0.98, rely=0.5, anchor="e")
-    
-    title_label = ctk.CTkLabel(history_page, text="Book History", font=("Arial", 30, "bold"), fg_color="light gray", text_color="#014aad")
+    title_label = ctk.CTkLabel(history_page, text="Book History", font=("Arial", 30, "bold"), text_color="#004AAD")
     title_label.place(relx=0.5, rely=0.15, anchor="center")
     
-    frame_box = ctk.CTkFrame(history_page, width=1100, height=600, fg_color="white", corner_radius=15, border_width=5, border_color="#014aad")
+    frame_box = ctk.CTkFrame(history_page, width=1100, height=600, fg_color="white", corner_radius=15, border_width=5, border_color="#004AAD")
     frame_box.place(relx=0.5, rely=0.23, anchor="n")
     image_cache = {}
     def load_image(filename, size=(50, 50)):
