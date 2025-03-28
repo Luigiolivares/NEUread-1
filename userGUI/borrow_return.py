@@ -56,15 +56,29 @@ def Main_borrow_return_page(content, userID, main):
     frame = tk.Frame(content, bg='#f2f3f7')
     frame.place(relx=0, rely=0, relwidth=1, relheight=1)
     
-    # Date
-    today = datetime.today().strftime("%d %B, %Y")
-    date_label = tk.Label(frame, text=today, font=('Arial', 18, 'bold'), bg='#f2f3f7', fg='black')
-    date_label.place(x=35, y=50)
-    
-    # Time
-    current_time = datetime.now().strftime("%I:%M %p")
-    time_label = tk.Label(frame, text=current_time, font=('Arial', 18, 'bold'), bg='#9dabbe', fg='black', padx=10, pady=4)
-    time_label.place(x=frame.winfo_screenwidth()-220, y=50)
+    time_border = ctk.CTkFrame(frame, width=(0.08 * ww), height=(0.067 * wh), fg_color="azure3", 
+                      corner_radius=13, border_width=15, border_color="azure3")
+    time_border.place(relx=0.89, rely=0.05)
+
+    date_border = ctk.CTkFrame(frame, width=(0.13 * ww), height=(0.069 * wh), fg_color="azure3", 
+                      corner_radius=13, border_width=15, border_color="azure3")
+    date_border.place(relx=0.03, rely=0.05)
+
+    def update_date():
+        ph_timezone = pytz.timezone("Asia/Manila")
+        current_time = datetime.now(ph_timezone)
+        formatted_date = current_time.strftime("%B %d, %Y")
+        formatted_time = current_time.strftime("%I:%M %p")
+        date_label.configure(text=formatted_date)
+        time_label.configure(text=formatted_time)
+        frame.after(1000, update_date)
+
+    date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
+    date_label.place(relx=0.07, rely=0.2)
+
+    time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
+    time_label.place(relx=0.07, rely=0.2)
+    update_date()
     
     # Frame for buttons
     button_frame = tk.Frame(frame)
@@ -119,7 +133,7 @@ def borrow_page(content, root, pressedPurpose):
     userIcon = user_pic
 
     time_border = ctk.CTkFrame(bors, width=(0.08 * ww), height=(0.067 * wh), fg_color="azure3", 
-                corner_radius=13, border_width=15, border_color="azure3")
+                      corner_radius=13, border_width=15, border_color="azure3")
     time_border.place(relx=0.89, rely=0.05)
 
     date_border = ctk.CTkFrame(bors, width=(0.13 * ww), height=(0.069 * wh), fg_color="azure3", 
@@ -134,7 +148,7 @@ def borrow_page(content, root, pressedPurpose):
         date_label.configure(text=formatted_date)
         time_label.configure(text=formatted_time)
         bors.after(1000, update_date)
-    
+
     date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
     date_label.place(relx=0.07, rely=0.2)
 
@@ -188,7 +202,7 @@ def borrow_page(content, root, pressedPurpose):
     userPart = admin
 
 def save_input(book_id_entry, inst_label, content, root):
-    global bookID, Title, ww, wh
+    global bookID, Title, ww, wh, initialUser
     book_id = book_id_entry.get()
     search_result = searchBookID(book_id)
     if not search_result:
@@ -198,6 +212,14 @@ def save_input(book_id_entry, inst_label, content, root):
         return
     if purpose == "Borrow" and search_result[0][3] != 1:
         notif = ctk.CTkLabel(content, text="Book is currently unavailable", font=("Arial", 20), text_color="Black")
+        notif.place(relx= 0.5, rely=0.5)  # Show the label
+        root.after(3000, lambda: notif.place_forget())
+        return
+    print(f"Purpose: {purpose}")
+    hasTheBook = ifTheyHaveTheBook(book_id, initialUser)
+    print(hasTheBook)
+    if purpose == "Return" and not hasTheBook:
+        notif = ctk.CTkLabel(content, text="You're not the one who borrowed the book", font=("Arial", 20), text_color="Black")
         notif.place(relx= 0.5, rely=0.5)  # Show the label
         root.after(3000, lambda: notif.place_forget())
         return

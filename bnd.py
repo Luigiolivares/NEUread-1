@@ -97,7 +97,7 @@ def returnBook(RFID, Book_ID, Date_returned):
 
     # Update the books table to set availability back to 1 (available)
     mycursor.execute(
-        "UPDATE books SET availability = 0 WHERE Book_ID = %s",
+        "UPDATE books SET availability = 1 WHERE Book_ID = %s",
         (Book_ID,)
     )
     
@@ -119,8 +119,10 @@ def showWhoToEmail():
         
         if result:  # Ensure result is not None
             listGmail.append(result[0])  # Append the email to the list
+            db.commit()
 
-    print(listGmail)
+    for gmail in listGmail:
+        send_Deadline_Info(gmail)
     return listGmail
 def getUserAndBookNum():
         # Query 1: Count all rows in the table
@@ -217,3 +219,12 @@ def send_email_with_attachment(RECIPIENT_EMAIL, start_date, end_date):
 
     except Exception as e:
         print(f"❌ Failed to send email: {e}")
+def ifTheyHaveTheBook(bookID, RFID):
+    mycursor.execute("select RFID from borrowed_books where book_ID = %s and Date_returned IS NULL", (bookID,))
+    borrowerRFID = mycursor.fetchone()[0]
+    if RFID == borrowerRFID:
+        print("true")
+        return True
+    else:
+        print("false")
+        return False

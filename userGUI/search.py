@@ -48,7 +48,7 @@ def Main_search_page(content):
 
         # Get books
         sectionIndex -= num
-        books = showGenreBooks(genre, sectionIndex, sectionIndex + 3)
+        books = showGenreBooks(genre, sectionIndex, 3)
 
         # If there are no books, return early
         sectionIndex += 3
@@ -131,13 +131,38 @@ def Main_search_page(content):
                 nextButton.place_forget() # No more books, hide Next button
         except IndexError:
             prevButton.place_forget()  # Hide Prev button on error
+    
     search_image = load_image("search_icon.png", size=(50, 50))
     next_image = load_image("next.png", size=(40, 40))
     back_image = load_image("back.png", size=(40, 40))
     # Create search page frame
     search_page = tk.Frame(content)
     search_page.place(relx=0, rely=0, relwidth=1, relheight=1)
+    ww = search_page.winfo_screenwidth()
+    wh = search_page.winfo_screenheight()
+    time_border = ctk.CTkFrame(search_page, width=(0.08 * ww), height=(0.067 * wh), fg_color="azure3", 
+                      corner_radius=13, border_width=15, border_color="azure3")
+    time_border.place(relx=0.89, rely=0.05)
 
+    date_border = ctk.CTkFrame(search_page, width=(0.13 * ww), height=(0.069 * wh), fg_color="azure3", 
+                      corner_radius=13, border_width=15, border_color="azure3")
+    date_border.place(relx=0.03, rely=0.05)
+
+    def update_date():
+        ph_timezone = pytz.timezone("Asia/Manila")
+        current_time = datetime.now(ph_timezone)
+        formatted_date = current_time.strftime("%B %d, %Y")
+        formatted_time = current_time.strftime("%I:%M %p")
+        date_label.configure(text=formatted_date)
+        time_label.configure(text=formatted_time)
+        search_page.after(1000, update_date)
+
+    date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
+    date_label.place(relx=0.07, rely=0.2)
+
+    time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
+    time_label.place(relx=0.07, rely=0.2)
+    update_date()
     # Create a border for the search bar
     search_border = ctk.CTkFrame(search_page, width=800, height=85, fg_color='white', corner_radius=15)
     search_border.place(relx=0.5, rely=0.1, anchor='center')
@@ -149,7 +174,7 @@ def Main_search_page(content):
 
     # Frame for all books (already exists)
     books = ctk.CTkFrame(content, width=1400, height=650, fg_color="white", 
-                      corner_radius=20, border_width=15, border_color="DeepSkyBlue3")
+                      corner_radius=20, border_width=15, border_color="#004AAD")
     books.place(relx=0.5, rely=0.55, anchor="center")
 
     # Divider Line
@@ -222,20 +247,19 @@ def Main_search_page(content):
 
         searchNum = num  # Unused in current code, can be removed if unnecessary
         bookArray = searchBooks("Title", searchedItem, 6, searchNum)
-        searchNum = searchNum + 6
         print(" ######, ",(searchNum + 6), searchNum )
 
     # Show first 3 books (if available)
         print("length of the books Searched: ", len(bookArray))
-        showBooks(bookArray[(searchNum-6): (searchNum - 3)], 0.30, False)
-    # Show next 3 books if the array has more than 3 books
+        showBooks(bookArray[0: 3], 0.30, False)
         if len(bookArray) > 3:
-            showBooks(bookArray[(searchNum-3): searchNum], 0.775, False)
+            print("extending")
+            showBooks(bookArray[3: 6], 0.775, False)
         if len(bookArray) >= 6:
-            search_next_button = ctk.CTkButton(books, text='', image=next_image, bg_color="white", width=50, fg_color="white", command= lambda: searchTitle(searchedItem, searchNum))
+            search_next_button = ctk.CTkButton(books, text='', image=next_image, bg_color="white", width=50, fg_color="white", command= lambda: searchTitle(searchedItem, (searchNum + 6)))
             search_next_button.place(relx=0.97, rely=0.05, anchor='ne')
-        if searchNum > 6:
-            search_back_button = ctk.CTkButton(books, text='', image= back_image, bg_color="white", width=50, fg_color="white", command= lambda: searchTitle(searchedItem, (searchNum - 12)))
+        if searchNum >= 6:
+            search_back_button = ctk.CTkButton(books, text='', image= back_image, bg_color="white", width=50, fg_color="white", command= lambda: searchTitle(searchedItem, (searchNum - 6)))
             search_back_button.place(relx=0.93, rely=0.05, anchor='ne')
     def enterSearch():
         input = search_bar.get()

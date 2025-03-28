@@ -2,7 +2,9 @@ import tkinter as tk
 from userGUI.mainGUI import start_neuread_app
 from userGUI.adminPanel import admin
 import time
+import datetime
 from bnd import *
+from PIL import Image, ImageTk
 # Create the main application window
 root = tk.Tk()
 root.title("Idle Page")
@@ -11,15 +13,19 @@ window_width = root.winfo_screenwidth()
 window_height = root.winfo_screenheight() 
 last_scan_time = 0
 active = False
-rfid_data = "0011158817"
+rfid_data = "0010556159"
 def create_idle_page():
     """Creates the idle page UI."""
     global idle_frame
+    bg_image = Image.open("idlePage.png")
+    bg_image = bg_image.resize((window_width, window_height), Image.LANCZOS)
+    bg_photo = ImageTk.PhotoImage(bg_image)
+
     idle_frame = tk.Frame(root, width=500, height=300, bg="lightgray")
     idle_frame.pack(fill="both", expand=True)
-
-    idle_label = tk.Label(idle_frame, text="Waiting...", font=("Arial", 18, "bold"), bg="lightgray")
-    idle_label.place(relx=0.5, rely=0.5, anchor="center")  # Center the label
+    bg_label = tk.Label(idle_frame, image=bg_photo)
+    bg_label.image = bg_photo  # Keep a reference to avoid garbage collection
+    bg_label.place(relwidth=1, relheight=1)
 
     # Bind key events to capture RFID input
     root.bind("<Key>", on_key_press)
@@ -64,9 +70,19 @@ def on_key_press(event):
     else:
         rfid_data += event.char
         print(rfid_data)
+def check_time():
+    """Checks the current time and runs showWhoToEmail() if it's between 4:00 PM and 4:15 PM."""
+    now = datetime.datetime.now()
+    current_time = now.strftime("%H:%M")
+
+    if "16:00" <= current_time <= "16:15":  # Check if it's between 4:00 and 4:15 PM
+        print("Running showWhoToEmail()...")
+        showWhoToEmail()
+
+    root.after(60000, check_time)  # Schedule the function to run again in 1 minute
 
 # Initialize the idle page at startup
 create_idle_page()
-
+check_time()
 # Run the application
 root.mainloop()
