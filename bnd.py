@@ -84,10 +84,16 @@ def addBorrowBook(RFID, Book_ID, Date_Borrowed, Deadline, Date_returned):
         (Book_ID,)
     )
     db.commit()
-    #SENDING AN EMAIL NA
-    mycursor.execute("SELECT DISTINCT Email FROM users WHERE RFID = %s;", (RFID,))
-    result = mycursor.fetchone()
-    send_Borrow_Info(result[0])
+    
+    #Mag e-email na
+    mycursor.execute("SELECT Email FROM users WHERE RFID = %s;", (RFID,))
+    borrowerEmail = mycursor.fetchall()[0][0]
+
+    mycursor.execute("SELECT Title, Author FROM books WHERE Book_ID = %s;", (Book_ID,))
+    title, author = mycursor.fetchall()[0]
+
+    send_Borrow_Info(borrowerEmail, title, author, Date_Borrowed, Deadline)
+
 def returnBook(RFID, Book_ID, Date_returned):
     # Update the borrowed_books table to set Date_returned where RFID and Book_ID match
     mycursor.execute(
@@ -116,13 +122,14 @@ def showWhoToEmail():
         # Secure query to fetch email
         mycursor.execute("SELECT DISTINCT Email FROM users WHERE RFID = %s;", (rfid,))
         result = mycursor.fetchone()  # Get the single email result
-        
+        mycursor.execute("SELECT Title, Deadline FROM borrowed_books WHERE RFID = %s; and Date_returned is NULL", (rfid,))
+        title, deadline = mycursor.fetchall()[0]
         if result:  # Ensure result is not None
-            listGmail.append(result[0])  # Append the email to the list
+            listGmail.append((result[0], title, deadline))  # Append the email to the list
             db.commit()
 
-    for gmail in listGmail:
-        send_Deadline_Info(gmail)
+    for email in listGmail:
+        send_Deadline_Info(email)
     return listGmail
 def getUserAndBookNum():
         # Query 1: Count all rows in the table
@@ -221,10 +228,15 @@ def send_email_with_attachment(RECIPIENT_EMAIL, start_date, end_date):
         print(f"❌ Failed to send email: {e}")
 def ifTheyHaveTheBook(bookID, RFID):
     mycursor.execute("select RFID from borrowed_books where book_ID = %s and Date_returned IS NULL", (bookID,))
-    borrowerRFID = mycursor.fetchone()[0]
-    if RFID == borrowerRFID:
-        print("true")
-        return True
-    else:
-        print("false")
-        return False
+    borrowerRFID = mycursor.fetchone()
+    print(RFID)
+    if borrowerRFID:
+        print(borrowerRFID[0])
+        if RFID == borrowerRFID[0]:
+            print("true")
+            return True
+        else:
+            print("false")
+            return False
+    print("wala siyang record")
+addBorrowBook("0010516239", 1013, "2025-02-24 09:00:00", "2025-02-26", None)
