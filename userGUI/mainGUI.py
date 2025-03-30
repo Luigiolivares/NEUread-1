@@ -54,31 +54,39 @@ def start_neuread_app(RFID, root, return_to_idle):
     button5_icon = ImageTk.PhotoImage(Image.open("btn5.png").resize((80,80)))
     button6_icon = ImageTk.PhotoImage(Image.open("btn6.png").resize((80,80)))
     # Track the currently active button
+# Sidebar Buttons
+ # Load Sidebar Icons
+    button1_icon = ImageTk.PhotoImage(Image.open("btn1.png").resize((120, 120)))
+    button2_icon = ImageTk.PhotoImage(Image.open("btn2.png").resize((120, 120)))
+    button3_icon = ImageTk.PhotoImage(Image.open("btn3.png").resize((120, 120)))
+    button4_icon = ImageTk.PhotoImage(Image.open("btn4.png").resize((120, 120)))
+    button5_icon = ImageTk.PhotoImage(Image.open("btn5.png").resize((120,120)))
+    button6_icon = ImageTk.PhotoImage(Image.open("btn6.png").resize((120,120)))
+    # Track the currently active button
 
-    button1 = tk.Button(sidebar, command=lambda: Main_user_page(content, RFID, root), image=button1_icon, compound='left', bg='#004AAD', bd=0) 
+    button1 = ctk.CTkButton(sidebar, text = "", command=lambda: Main_user_page(content, RFID, root), image=button1_icon, compound='left', fg_color='#004AAD', border_width=0, hover_color="#0067D9")
     button1.image = button1_icon
-    button1.pack(fill='x', expand =True, pady=1)
-    
-    button2 = tk.Button(sidebar, command=lambda: Main_borrow_return_page(content, profileInfo[0][0][0], root), image=button2_icon, compound='left', bg='#004AAD', bd=0)
+    button1.pack(fill='x', expand=True, pady=1)
+
+    button2 = ctk.CTkButton(sidebar, text = "", command=lambda: Main_borrow_return_page(content, profileInfo[0][0][0], root), image=button2_icon, compound='left', fg_color='#004AAD', border_width=0, hover_color="#0067D9")
     button2.image = button2_icon
     button2.pack(fill='x', expand=True, pady=1)
-    
-    button3 = tk.Button(sidebar, command=lambda: Main_search_page(content), image=button3_icon, compound='left', bg='#004AAD', bd=0)
+
+    button3 = ctk.CTkButton(sidebar, text = "", command=lambda: Main_search_page(content), image=button3_icon, compound='left', fg_color='#004AAD', border_width=0, hover_color="#0067D9")
     button3.image = button3_icon
     button3.pack(fill='x', expand=True, pady=1)
 
-    button4 = tk.Button(sidebar, command=lambda: Main_history_page(content, profileInfo[0][0][0]), image=button4_icon, compound='left', bg='#004AAD', bd=0)
+    button4 = ctk.CTkButton(sidebar, text = "",command=lambda: Main_history_page(content, profileInfo[0][0][0]), image=button4_icon, compound='left', fg_color='#004AAD', border_width=0, hover_color="#0067D9")
     button4.image = button4_icon
     button4.pack(fill='x', expand=True, pady=1)
 
-    button5 = tk.Button(sidebar, command=lambda: initiateMainReg(content), image=button5_icon, compound='left', bg='#004AAD', bd=0)
+    button5 = ctk.CTkButton(sidebar,text = "", command=lambda: initiateMainReg(content), image=button5_icon, compound='left', fg_color='#004AAD', border_width=0, hover_color="#0067D9")
     button5.image = button5_icon
     button5.pack(fill='x', expand=True, pady=1)
 
-    button6 = tk.Button(sidebar, command=lambda: Main_exit_page(content, return_to_idle), image=button6_icon, compound='left', bg='#004AAD', bd=0)
+    button6 = ctk.CTkButton(sidebar, text = "", command=lambda: Main_exit_page(content, return_to_idle), image=button6_icon, compound='left', fg_color='#004AAD', border_width=0, hover_color="#0067D9")
     button6.image = button6_icon
     button6.pack(fill="x", expand=True, pady=1)
-
     # Entry Page (Login Screen)
     def proceedProfile(event, popUp):
         if event.widget == popUp:

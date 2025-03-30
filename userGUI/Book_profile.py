@@ -28,18 +28,18 @@ def book_profile(content, bookID):
     image = Image.open(BytesIO(book[0][4]))  # Convert binary to image
 
 # Apply add_corners function and set size
-    book_cover_image = ctk.CTkImage(add_corners(image, 100, ww, wh), size=((0.16 * ww), (0.46 * wh)))
+    book_cover_image = ctk.CTkImage(image, size=((0.16 * ww), (0.46 * wh)))
 
     profile = tk.Frame(content)
-    profile.place(width=ww, height=wh)
+    profile.place(relx=0, rely=0, relwidth=1, relheight=1)
 
     time_border = ctk.CTkFrame(profile, width=(0.08 * ww), height=(0.067 * wh), fg_color="azure3", 
                       corner_radius=13, border_width=15, border_color="azure3")
-    time_border.place(x=(0.81 * ww), y=(0.05 * wh))
+    time_border.place(relx=0.89, rely=0.05)
 
     date_border = ctk.CTkFrame(profile, width=(0.13 * ww), height=(0.069 * wh), fg_color="azure3", 
                       corner_radius=13, border_width=15, border_color="azure3")
-    date_border.place(x=(0.11 * ww), y=(0.05 * wh))
+    date_border.place(relx=0.03, rely=0.05)
 
     def update_date():
         ph_timezone = pytz.timezone("Asia/Manila")
@@ -49,7 +49,7 @@ def book_profile(content, bookID):
         date_label.configure(text=formatted_date)
         time_label.configure(text=formatted_time)
         profile.after(1000, update_date)
-    
+
     date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
     date_label.place(relx=0.07, rely=0.2)
 
@@ -59,13 +59,13 @@ def book_profile(content, bookID):
 
     info = ctk.CTkFrame(profile, width=(0.78 * ww), height=(0.75 * wh), fg_color="white", 
                       corner_radius=20, border_width=15, border_color="DeepSkyBlue3")
-    info.place(x=(ww * 0.5), y=(0.55 * wh), anchor="center") 
+    info.place(relx=0.5, rely=0.55, anchor="center") 
 
     page_label = ctk.CTkLabel(info, text='Book Profile', font=("Arial", 40, "bold"), text_color="blue")
-    page_label.place(relx=0.04, rely=0.05, anchor='nw')
+    page_label.place(relx=0.09, rely=0.05, anchor='nw')
 
     book_cover = ctk.CTkLabel(info, text='', image=book_cover_image)
-    book_cover.place(relx=0.035, rely=0.12)
+    book_cover.place(relx=0.0855, rely=0.12)
     bookState = []
     if book[0][3] != 0:
         bookState.append("AVAILABLE")
@@ -74,7 +74,7 @@ def book_profile(content, bookID):
         bookState.append("UNAVAILABLE")
         bookState.append("red")
     availability_border = ctk.CTkFrame(info, width=(0.14 * ww), height=(0.06 * wh), fg_color=bookState[1], corner_radius=20, border_width=15, border_color=bookState[1])
-    availability_border.place(x=(0.06 * ww), y=(0.61 * wh))
+    availability_border.place(relx=0.1, rely=0.8)
     availability = ctk.CTkLabel(availability_border, text=bookState[0], font=("Arial", 25, "bold"), text_color="white", bg_color=bookState[1])
     availability.place(relx=0.13, rely=0.2)
 
@@ -90,7 +90,7 @@ def book_profile(content, bookID):
     book_genre  = ctk.CTkLabel(info, text=('Genre: ' + book[0][5]), font=("Arial", 24, "bold"), text_color="blue")
     book_genre.place(relx=0.4, rely=0.26)
 
-    book_adress = ctk.CTkLabel(info, text=('Shelf: ', book[0][7]), font=("Arial", 24, "bold"), text_color="blue")
+    book_adress = ctk.CTkLabel(info, text=f'Shelf: {book[0][7]}', font=("Arial", 24, "bold"), text_color="blue")
 
     book_adress.place(relx=0.4, rely=0.3)
     book_description  = ctk.CTkLabel(info, text= book[0][2], 

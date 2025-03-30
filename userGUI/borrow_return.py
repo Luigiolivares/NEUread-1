@@ -80,32 +80,28 @@ def Main_borrow_return_page(content, userID, main):
     time_label.place(relx=0.07, rely=0.2)
     update_date()
     
-    # Frame for buttons
-    button_frame = tk.Frame(frame)
-    button_frame.place(x=245, y=110)
-    
-    # Load Button Icons
-    borrow_icon = ImageTk.PhotoImage(Image.open("borrowbtn.png").resize((280, 260)))
-    return_icon = ImageTk.PhotoImage(Image.open("returnbtn.png").resize((280, 260)))
-    
-    # Borrow button
-    borrow_btn = tk.Button(
-        button_frame, text="\nBorrow", font=('Arial', 30, "bold"), bg='white', fg='black', bd=0,
-        width=400, height=670, image=borrow_icon, compound='top', padx=10, pady=10,
-        command=lambda: borrow_page(content, main, "Borrow")
-    )
-    borrow_btn.image = borrow_icon  # Keep a reference to prevent garbage collection
-    borrow_btn.grid(row=0, column=0, padx=30)
-    
-    # Return button
-    return_btn = tk.Button(
-        button_frame, text="\nReturn", font=('Arial', 30, "bold"), bg='white', fg='black', bd=0,
-        width=400, height=670, image=return_icon, compound='top', padx=10, pady=10,
-        command=lambda: borrow_page(content, main, "Return")
-    )
-    return_btn.image = return_icon  # Keep a reference to prevent garbage collection
-    return_btn.grid(row=0, column=1, padx=30)
+# Load Button Icons
+    borrow_icon = ctk.CTkImage(light_image=Image.open("borrowbtn.png").resize((280, 260)),
+                           dark_image=Image.open("borrowbtn.png").resize((280, 260)),
+                           size=(280, 260))
 
+    return_icon = ctk.CTkImage(light_image=Image.open("returnbtn.png").resize((280, 260)),
+                           dark_image=Image.open("returnbtn.png").resize((280, 260)),
+                           size=(280, 260))
+
+# Borrow Button
+    borrow_btn = ctk.CTkButton(frame, text="Borrow", font=('Arial', 20, "bold"), width=400, height=600,
+                           fg_color="white", text_color="black",
+                           image=borrow_icon, compound="top", corner_radius=10,
+                           command=lambda: borrow_page(content, main, "Borrow"))
+    borrow_btn.place(relx=0.3, rely=0.5, anchor="center")  # Adjust placement
+
+# Return Button
+    return_btn = ctk.CTkButton(frame, text="Return", font=('Arial', 20, "bold"), width=400, height=600,
+                           fg_color="white", text_color="black",
+                           image=return_icon, compound="top", corner_radius=10,
+                           command=lambda: borrow_page(content, main, "Return"))
+    return_btn.place(relx=0.7, rely=0.5, anchor="center")  # Adjust placement
 search = open("next_blue.png", "rb")
 dot = open("dot_pic.png", "rb")
 admin_profile = open("admin_pic.png", "rb")
@@ -156,31 +152,32 @@ def borrow_page(content, root, pressedPurpose):
     time_label.place(relx=0.07, rely=0.2)
     update_date()
 
-    page_bg = ctk.CTkFrame(bors, width=(0.5 * ww), height=(0.14 * wh), fg_color="white", 
+    page_bg = ctk.CTkFrame(bors, width=(0.510 * ww), height=(0.14 * wh), fg_color="white", 
                       corner_radius=20)
-    page_bg.place(relx=0.5, rely=0.15, anchor='center')
+    page_bg.place(relx=0.5, rely=0.20, anchor='center')
 
-    page_label = ctk.CTkLabel(page_bg, text=f'{purpose} Book', font=("Arial", 40, "bold"), text_color="blue",  wraplength= 300)
-    page_label.place(relx=0.5, rely=0.2, anchor= "center")
+    page_label = ctk.CTkLabel(page_bg, text=f'{purpose} Book', font=("Arial", 30, "bold"), text_color="blue",  wraplength= 700)
+    page_label.place(relx=0.5, rely=0.5, anchor= "center")
     topLabel = page_label
 
     book_label = ctk.CTkLabel(bors, text='', image=book_pic, width=(0.05 * ww))
-    book_label.place(relx=0.05, rely=0.4)
+    book_label.place(relx=0.20, rely=0.5, anchor="center")
 
     dot1_label = ctk.CTkLabel(bors, text='', image=dot_pic, width=(0.05 * ww))
-    dot1_label.place(relx=0.3, rely=0.49)
+    dot1_label.place(relx=0.35, rely=0.5, anchor="center")
 
     user = ctk.CTkLabel(bors, text='', image=user_pic, width=(0.05 * ww))
-    user.place(relx=0.435, rely=0.4)
+    user.place(relx=0.5, rely=0.5, anchor="center")
 
     dot2_label = ctk.CTkLabel(bors, text='', image=dot_pic, width=(0.05 * ww))
-    dot2_label.place(relx=0.635, rely=0.49)
+    dot2_label.place(relx=0.645, rely=0.5, anchor="center")
 
     admin = ctk.CTkLabel(bors, text='', image=admin_pic, width=(0.05 * ww))
-    admin.place(relx=0.76, rely=0.4)
+    admin.place(relx=0.80, rely=0.5, anchor="center")
 
-    inst_label = ctk.CTkLabel (bors, text='Check the spine of the book for Book ID (Example: 1027)', font = ("Arial", 20), text_color="Black")
-    inst_label.place (relx=0.5, rely=0.71, anchor='n')
+    inst_label = ctk.CTkLabel(bors, text='Check the spine of the book for Book ID (Example: 1027)', 
+                           font=("Arial", 20), text_color="Black")
+    inst_label.place(relx=0.5, rely=0.75, anchor="center")
 
     # Create the search bar entry inside the border
     book_id_entry = ctk.CTkEntry(bors, width=750, height=70, corner_radius=50, fg_color='white',
@@ -190,7 +187,7 @@ def borrow_page(content, root, pressedPurpose):
     entry_button = ctk.CTkButton(book_id_entry, text='', image=search_image, width=(0.05 * ww), fg_color='white', command= lambda: save_input(book_id_entry, inst_label, content, root))
     entry_button.place(relx=0.97, rely=0.5, anchor='e')
 
-    cancel_button = ctk.CTkButton(bors, text='CANCEL', height=50, width=(0.05 * ww), fg_color='blue', font=("Arial", 25, "bold"), 
+    cancel_button = ctk.CTkButton(bors, text='CANCEL', height=50, width=(0.05 * ww), fg_color='blue', font=("Arial", 25, "bold"), command = lambda: Main_borrow_return_page(content, userRFID, root), 
                                   text_color="White", corner_radius=20)
     cancel_button.place(relx=0.45, rely=0.90)
 
@@ -206,27 +203,35 @@ def save_input(book_id_entry, inst_label, content, root):
     book_id = book_id_entry.get()
     search_result = searchBookID(book_id)
     if not search_result:
-        notif = ctk.CTkLabel(content, text="Book ID doesnt exist", font=("Arial", 20), text_color="Black")
-        notif.place(relx= 0.5, rely=0.5)  # Show the label
-        root.after(3000, lambda: notif.place_forget())
+        notif_frame = ctk.CTkFrame(content, width=425, height=50, corner_radius=20, fg_color="#ADD8E6", border_width=3, border_color="blue")
+        notif_frame.place(relx= 0.5, rely=0.7, anchor= "center")
+        notif = ctk.CTkLabel(notif_frame, text="Book ID doesnt exist", font=("Arial", 25, "bold"), text_color="blue")
+        notif.place(relx= 0.5, rely=0.5, anchor= "center")  # Show the label
+        root.after(3000, lambda: notif_frame.destroy())
         return
     if purpose == "Borrow" and search_result[0][3] != 1:
-        notif = ctk.CTkLabel(content, text="Book is currently unavailable", font=("Arial", 20), text_color="Black")
-        notif.place(relx= 0.5, rely=0.5)  # Show the label
-        root.after(3000, lambda: notif.place_forget())
+        notif_frame = ctk.CTkFrame(content, width=425, height=50, corner_radius=20, fg_color="#ADD8E6", border_width=3, border_color="blue")
+        notif_frame.place(relx= 0.5, rely=0.7, anchor= "center")
+        notif = ctk.CTkLabel(notif_frame, text="Book is currently unavailable", font=("Arial", 25, "bold"), text_color="blue")
+        notif.place(relx= 0.5, rely=0.5, anchor= "center")  # Show the label
+        root.after(3000, lambda: notif_frame.destroy())
         return
     print(f"Purpose: {purpose}")
     hasTheBook = ifTheyHaveTheBook(book_id, initialUser)
     print(hasTheBook)
     if purpose == "Return" and not hasTheBook:
-        notif = ctk.CTkLabel(content, text="You're not the one who borrowed the book", font=("Arial", 20), text_color="Black")
-        notif.place(relx= 0.5, rely=0.5)  # Show the label
-        root.after(3000, lambda: notif.place_forget())
+        notif_frame = ctk.CTkFrame(content, width=425, height=50, corner_radius=20, fg_color="#ADD8E6", border_width=3, border_color="blue")
+        notif_frame.place(relx= 0.5, rely=0.7, anchor= "center")
+        notif = ctk.CTkLabel(notif_frame, text="You're not the one who borrowed the book", font=("Arial", 25, "bold"), text_color="blue")
+        notif.place(relx= 0.5, rely=0.5, anchor= "center")  # Show the label
+        root.after(3000, lambda: notif_frame.destroy())
         return
     if (search_result[0][3] != 0 and purpose == "Return"):
-        notif = ctk.CTkLabel(content, text="Book is already available", font=("Arial", 20), text_color="Black")
-        notif.place(relx= 0.5, rely=0.5)  # Show the label
-        root.after(3000, lambda: notif.place_forget())
+        notif_frame = ctk.CTkFrame(content, width=425, height=50, corner_radius=20, fg_color="#ADD8E6", border_width=3, border_color="blue")
+        notif_frame.place(relx= 0.5, rely=0.7, anchor= "center")
+        notif = ctk.CTkLabel(notif_frame, text="Book is already available", font=("Arial", 25, "bold"), text_color="blue")
+        notif.place(relx= 0.5, rely=0.5, anchor= "center")  # Show the label
+        root.after(3000, lambda: notif_frame.destroy())
         return
     
     print(f"Book ID Entered: {search_result[0][0]}", ", kukuhain na admin")
@@ -249,7 +254,7 @@ def getAdmin(content, root, Title):
 
     bookPart.configure(image = new_bookImage)
     adminPart.configure(image = new_adminImage)
-    topLabel.configure(text=f"You are borrowing '{Title}'")
+    topLabel.configure(text=f"You are borrowing:\n '{Title}'")
     bottomLabel.place (relx=0.5, rely=0.81, anchor='n')
 
     root.bind("<Key>", lambda event: keyPressed(event, content, root))

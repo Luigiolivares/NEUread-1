@@ -82,7 +82,6 @@ def Main_history_page(content, RFID):
 
     backimage = load_image("back.png", size=(40, 40))
     backbutton = ctk.CTkButton(frame_box, image=backimage, text="", fg_color="white", hover_color="lightgray", width=30, height=70, command= lambda: configureBooks(-3, backbutton, backbutton, 0.93, 0.1, .99, 0.1))
-    backbutton.place(relx=0.93, rely=0.1, anchor="e")
     backbutton.image = backimage
     
     nextimage = load_image("next.png", size=(40, 40))

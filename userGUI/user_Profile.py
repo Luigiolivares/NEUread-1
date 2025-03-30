@@ -45,7 +45,7 @@ def Main_user_page(content, RFID, root):
 
     profile = ctk.CTkFrame(user_page, width=(1100), height=(150), fg_color="white",
                       corner_radius=15)
-    profile.place(relx=0.15, rely=0.2)
+    profile.place(relx=0.5, rely=0.275, anchor='center')
 
     profile_image = ctk.CTkLabel(profile, text='', image=person_image)
     profile_image.place(relx=0.05, rely=0.2)

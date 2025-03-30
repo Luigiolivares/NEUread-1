@@ -66,8 +66,9 @@ def Main_search_page(content):
         genresNum -= num
 
         # Remove previous book buttons 
-        for button, y in book_buttons:
+        for button, y, title in book_buttons:
             button.destroy()
+            title.destroy()
         book_buttons.clear()  # Reset list
 
         # Increment genresNum to move forward
@@ -75,8 +76,8 @@ def Main_search_page(content):
         firstGenres = booksOutput(genres[genresNum], "firstSectionNum", 0)
         secondGenres = booksOutput(genres[genresNum + 1], "secondSectionNum", 0)
         # Print genres and books for debugging
-        showBooks(secondGenres, 0.775, True)
-        showBooks(firstGenres, 0.30, True)
+        showBooks(secondGenres, 0.730, True)
+        showBooks(firstGenres, 0.25, True)
         # Hide Prev button if at the first genre
         firstPrevButton.place_forget()
         secondPrevButton.place_forget()
@@ -104,13 +105,14 @@ def Main_search_page(content):
         # Determine which section number to adjust
         if sectionName == "firstSectionNum":
             sectionVar = firstSectionNum
-            rely_value = 0.30
+            rely_value = 0.25
         elif sectionName == "secondSectionNum":
             sectionVar = secondSectionNum
-            rely_value = 0.775
-        for button, y_val in book_buttons:  # Iterate over a copy to avoid modification issues
+            rely_value = 0.730
+        for button, y_val, title in book_buttons:  # Iterate over a copy to avoid modification issues
             if y_val == rely_value:
                 button.destroy()
+                title.destroy()
             # Hide 'Prev' if at the first section
         if sectionVar - num <= 0:
             nextButton.place(relx=next_x, rely=next_y, anchor= 'w')
@@ -122,9 +124,9 @@ def Main_search_page(content):
             # Fetch books
             books = booksOutput(genre, sectionName, num)
             if sectionName == "firstSectionNum":
-                showBooks(books, 0.30, True)
+                showBooks(books, 0.25, True)
             elif sectionName == "secondSectionNum":
-                showBooks(books, 0.775, True)
+                showBooks(books, 0.730, True)
             if len(books) == 3:
                 nextButton.place(relx=next_x, rely=next_y,anchor= 'w')
             else:
@@ -173,7 +175,7 @@ def Main_search_page(content):
     search_bar.place(relx=0.5, rely=0.5, anchor="center")
 
     # Frame for all books (already exists)
-    books = ctk.CTkFrame(content, width=1400, height=650, fg_color="white", 
+    books = ctk.CTkFrame(content, width=(0.8 * ww), height=650, fg_color="white", 
                       corner_radius=20, border_width=15, border_color="#004AAD")
     books.place(relx=0.5, rely=0.55, anchor="center")
 
@@ -223,22 +225,21 @@ def Main_search_page(content):
             
             # Create book button
             book_button = ctk.CTkButton(
-                books, image=ctk_image, compound="top", 
+                books, image=ctk_image, compound="top", text= "",
                 fg_color="white", hover_color="lightblue", command = lambda id=id: book_profile(content, id)
             )
-            titleLabel = ctk.CTkLabel(books, text=title, font=("Arial", 10, "bold"), text_color="grey")
-            titleLabel.place(relx=positions[i][0], rely=(positions[i][1])+0.2, anchor="center")
-            genre_labels.extend([titleLabel])
+            titleLabel = ctk.CTkLabel(books, text=title, font=("Stylus", 13.5, "bold"), text_color="gray", wraplength=300)
+            titleLabel.place(relx=positions[i][0], rely=(positions[i][1])+0.20, anchor="center")
             # Place button using predefined positions
             book_button.place(relx=positions[i][0], rely=(positions[i][1]), anchor="center")
             book_button.image = ctk_image  # Keep reference to prevent garbage collection
-            book_buttons.append((book_button, y))
+            book_buttons.append((book_button, y, titleLabel))
             # Fetch books from two genres
     firstGenres = booksOutput(genres[genresNum], "firstSectionNum", 0)
     secondGenres = booksOutput(genres[genresNum + 1], "secondSectionNum", 0)
     # Print genres and books for debugging
-    showBooks(secondGenres, 0.775, True)
-    showBooks(firstGenres, 0.30, True)
+    showBooks(secondGenres, 0.730, True)
+    showBooks(firstGenres, 0.25, True)
 
     ### SA MAY LITERAL NA SEARCH NAMAN ############
     def searchTitle(searchedItem, num):
@@ -251,10 +252,10 @@ def Main_search_page(content):
 
     # Show first 3 books (if available)
         print("length of the books Searched: ", len(bookArray))
-        showBooks(bookArray[0: 3], 0.30, False)
+        showBooks(bookArray[0: 3], 0.25, False)
         if len(bookArray) > 3:
             print("extending")
-            showBooks(bookArray[3: 6], 0.775, False)
+            showBooks(bookArray[3: 6], 0.730, False)
         if len(bookArray) >= 6:
             search_next_button = ctk.CTkButton(books, text='', image=next_image, bg_color="white", width=50, fg_color="white", command= lambda: searchTitle(searchedItem, (searchNum + 6)))
             search_next_button.place(relx=0.97, rely=0.05, anchor='ne')
