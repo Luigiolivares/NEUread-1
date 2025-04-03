@@ -58,7 +58,7 @@ def book_profile(content, bookID):
     update_date()
 
     info = ctk.CTkFrame(profile, width=(0.78 * ww), height=(0.75 * wh), fg_color="white", 
-                      corner_radius=20, border_width=15, border_color="DeepSkyBlue3")
+                      corner_radius=20, border_width=15, border_color="5088FC")
     info.place(relx=0.5, rely=0.55, anchor="center") 
 
     page_label = ctk.CTkLabel(info, text='Book Profile', font=("Arial", 40, "bold"), text_color="blue")

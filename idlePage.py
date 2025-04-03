@@ -13,7 +13,7 @@ window_width = root.winfo_screenwidth()
 window_height = root.winfo_screenheight() 
 last_scan_time = 0
 active = False
-rfid_data = "0010567289"
+rfid_data = "0010516239"
 def create_idle_page():
     """Creates the idle page UI."""
     global idle_frame
@@ -35,7 +35,7 @@ def return_to_idle():
     """Returns the user to the idle page by clearing the screen and recreating the idle frame."""
     for widget in root.winfo_children():
         widget.destroy()
-    active = False
+    active = False  
     create_idle_page()
 
 def on_key_press(event):

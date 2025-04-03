@@ -43,6 +43,6 @@ def Main_exit_page(content, return_to_idle):
     message.place(relx=0.5, rely=0.4, anchor="center")
 
     # Log out Button
-    logout_btn = tk.Button(frame, text="LOG OUT", font=("Arial", 20, "bold"), bg="#004aad", fg="white", activebackground="gray", activeforeground="black", padx=20, pady=10, bd=0, command = return_to_idle)
+    logout_btn = tk.Button(frame, text="LOG OUT", font=("Arial", 20, "bold"), bg="#5088FC", fg="white", activebackground="gray", activeforeground="black", padx=20, pady=10, bd=0, command = return_to_idle)
     logout_btn.place(relx=0.5, rely=0.6, anchor="center")
     exit_page.tkraise(exit_page)

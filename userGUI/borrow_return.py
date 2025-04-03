@@ -198,40 +198,33 @@ def borrow_page(content, root, pressedPurpose):
     adminPart = user
     userPart = admin
 
+def errorNotif(err, content, root):
+    notif_frame = ctk.CTkFrame(content, width=520, height=50, corner_radius=20, fg_color="#ADD8E6", border_width=3, border_color="blue")
+    notif_frame.place(relx= 0.5, rely=0.7, anchor= "center")
+    notif = ctk.CTkLabel(notif_frame, text=err, font=("Arial", 25, "bold"), text_color="blue")
+    notif.place(relx= 0.5, rely=0.5, anchor= "center")  # Show the label
+    root.after(3000, lambda: notif_frame.destroy())
+
 def save_input(book_id_entry, inst_label, content, root):
     global bookID, Title, ww, wh, initialUser
     book_id = book_id_entry.get()
     search_result = searchBookID(book_id)
     if not search_result:
-        notif_frame = ctk.CTkFrame(content, width=425, height=50, corner_radius=20, fg_color="#ADD8E6", border_width=3, border_color="blue")
-        notif_frame.place(relx= 0.5, rely=0.7, anchor= "center")
-        notif = ctk.CTkLabel(notif_frame, text="Book ID doesnt exist", font=("Arial", 25, "bold"), text_color="blue")
-        notif.place(relx= 0.5, rely=0.5, anchor= "center")  # Show the label
-        root.after(3000, lambda: notif_frame.destroy())
+        errorNotif("Book ID doesnt exist", content, root)
         return
     if purpose == "Borrow" and search_result[0][3] != 1:
-        notif_frame = ctk.CTkFrame(content, width=425, height=50, corner_radius=20, fg_color="#ADD8E6", border_width=3, border_color="blue")
-        notif_frame.place(relx= 0.5, rely=0.7, anchor= "center")
-        notif = ctk.CTkLabel(notif_frame, text="Book is currently unavailable", font=("Arial", 25, "bold"), text_color="blue")
-        notif.place(relx= 0.5, rely=0.5, anchor= "center")  # Show the label
-        root.after(3000, lambda: notif_frame.destroy())
+        errorNotif("Book is currently unavailable", content, root)
         return
-    print(f"Purpose: {purpose}")
+    exceeds = ifTheyExceedBorrow(initialUser)
+    if purpose == "Borrow" and exceeds:
+        errorNotif("exceeded the limit of borrowing", content, root)
+        return
     hasTheBook = ifTheyHaveTheBook(book_id, initialUser)
-    print(hasTheBook)
     if purpose == "Return" and not hasTheBook:
-        notif_frame = ctk.CTkFrame(content, width=425, height=50, corner_radius=20, fg_color="#ADD8E6", border_width=3, border_color="blue")
-        notif_frame.place(relx= 0.5, rely=0.7, anchor= "center")
-        notif = ctk.CTkLabel(notif_frame, text="You're not the one who borrowed the book", font=("Arial", 25, "bold"), text_color="blue")
-        notif.place(relx= 0.5, rely=0.5, anchor= "center")  # Show the label
-        root.after(3000, lambda: notif_frame.destroy())
+        errorNotif("You're not the one who borrowed the book", content, root)
         return
     if (search_result[0][3] != 0 and purpose == "Return"):
-        notif_frame = ctk.CTkFrame(content, width=425, height=50, corner_radius=20, fg_color="#ADD8E6", border_width=3, border_color="blue")
-        notif_frame.place(relx= 0.5, rely=0.7, anchor= "center")
-        notif = ctk.CTkLabel(notif_frame, text="Book is already available", font=("Arial", 25, "bold"), text_color="blue")
-        notif.place(relx= 0.5, rely=0.5, anchor= "center")  # Show the label
-        root.after(3000, lambda: notif_frame.destroy())
+        errorNotif("Book is already available", content, root)
         return
     
     print(f"Book ID Entered: {search_result[0][0]}", ", kukuhain na admin")
@@ -242,7 +235,7 @@ def save_input(book_id_entry, inst_label, content, root):
     getAdmin(content, root, search_result[0][0])
 
 def getAdmin(content, root, Title):
-    global topLabel, bookIcon, adminIcon, ww, wh, bookPart, adminPart, bottomLabel
+    global topLabel, bookIcon, adminIcon, ww, wh, bookPart, adminPart, bottomLabel, purpose
     new_bookImage = ctk.CTkImage(
         light_image=Image.open(DONE_book),
         size=((0.13 * ww), (0.23 * wh))
@@ -254,7 +247,7 @@ def getAdmin(content, root, Title):
 
     bookPart.configure(image = new_bookImage)
     adminPart.configure(image = new_adminImage)
-    topLabel.configure(text=f"You are borrowing:\n '{Title}'")
+    topLabel.configure(text=f"You are {purpose}:\n '{Title}'")
     bottomLabel.place (relx=0.5, rely=0.81, anchor='n')
 
     root.bind("<Key>", lambda event: keyPressed(event, content, root))
@@ -276,20 +269,20 @@ def getUser():
 
 
 def completeTransaction(RFID, content, root):
-    global bookID, purpose, Title, ww, wh, userRFID
+    global bookID, purpose, Title, ww, wh
 
-    pop_up_page = tk.Frame(content, width=500, height=300, bg="dark blue")
+    pop_up_page = tk.Frame(content, width=500, height=300, bg="89AEFF")
     pop_up_page.pack(fill="both", expand=True)
 
     # Bind the frame touch event, passing the frame as an argument
-    pop_up_page.bind("<Button-1>", lambda event: on_frame_touch(event, pop_up_page, content, userRFID, root))
+    pop_up_page.bind("<Button-1>", lambda event: on_frame_touch(event, pop_up_page, content, root))
 
     pop_up_label = tk.Label(pop_up_page, text=f'"{Title}"', fg="white", font=("Arial", 55, "bold"), 
-                            bg="dark blue", wraplength=1500)
+                            bg="89AEFF", wraplength=1500)
     pop_up_label.place(relx=0.5, rely=0.45, anchor="center")
 
     pop_up_label2 = tk.Label(pop_up_page, text="Please touch the screen to continue", fg="white", 
-                             font=("Arial", 20, "bold"), bg="dark blue")
+                             font=("Arial", 20, "bold"), bg="89AEFF")
     pop_up_label2.place(relx=0.5, rely=0.90, anchor="center")
 
     if purpose == "Borrow":
@@ -298,11 +291,11 @@ def completeTransaction(RFID, content, root):
         addBorrowBook(RFID, bookID, Date_Borrowed, Deadline, None)
 
         pop_up_label3 = tk.Label(pop_up_page, text=f'Please return the book on or before {Deadline} to avoid being penalized.', 
-                                 fg="white", font=("Arial", 30), bg="dark blue", wraplength=2000)
+                                 fg="white", font=("Arial", 30), bg="89AEFF", wraplength=2000)
         pop_up_label3.place(relx=0.5, rely=0.60, anchor="center")
 
         pop_up_label4 = tk.Label(pop_up_page, text='You borrowed', fg="white", font=("Arial", 55, "bold"), 
-                                 bg="dark blue")
+                                 bg="89AEFF")
         pop_up_label4.place(relx=0.5, rely=0.30, anchor="center")
 
         print("Added to the database")
@@ -312,12 +305,13 @@ def completeTransaction(RFID, content, root):
         returnBook(RFID, bookID, Date_Returned)
 
         pop_up_label5 = tk.Label(pop_up_page, text='You returned', fg="white", font=("Arial", 55, "bold"), 
-                                 bg="dark blue")
+                                 bg="89AEFF")
         pop_up_label5.place(relx=0.5, rely=0.30, anchor="center")
 
-def on_frame_touch(event, frame, content, userID, main):
+def on_frame_touch(event, frame, content, main):
+    global initialUser
     if event.widget == frame:
-        Main_borrow_return_page(content, userID, main)
+        Main_borrow_return_page(content, initialUser, main)
 def is_rfid_scan():
     global last_scan_time
     current_time = time.time()
@@ -343,17 +337,16 @@ def keyPressed(event, content, root):
                 adminRFID = True
                 getUser()
             else:
-                print("Admin not found")
+                errorNotif("Admin not found", content, root)
             rfid_data = ""  # Reset buffer
         elif rfid_data and adminRFID:
             user = getUserInfo(rfid_data)
-            if user[0][0][0] == initialUser:
+            if user == ([], [], []) or user[0][0][0] == initialUser:
                 completeTransaction(rfid_data, content, root)
                 root.unbind("<Key>")
                 print(f"User Entered: {user[0][0][1]}")
             else:
-                print(rfid_data)
                 rfid_data = ""
-                print("Incorrect user")
+                errorNotif("Incorrect User", content, root)
     else:
         rfid_data += event.char
