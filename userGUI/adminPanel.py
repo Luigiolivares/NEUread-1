@@ -1,6 +1,5 @@
 import tkinter as tk
 import customtkinter as ctk
-from pywinstyles import set_opacity
 from PIL import Image, ImageTk  # Import Pillow for image resizing
 import bcrypt
 from tkinter import Canvas
@@ -25,8 +24,6 @@ def admin(content, return_to_idle):
 
     password_frame = ctk.CTkFrame(content, width=1350, height=700, fg_color="white", border_color="grey")
     password_frame.place(relx=0.5, rely=0.5, anchor= "center")
-
-    set_opacity(password_frame, value=0.8)
 
     enter_password = ctk.CTkLabel(password_frame, text="Enter The Password\nTo Proceed", 
                                   font=("Arial", 75, 'bold'), text_color="Black")
@@ -205,11 +202,12 @@ def adminMain(root, return_to_idle):
         if event.widget == frame:
             frame.unbind("<Button-1>")
             return_to_idle()
-    def exportData():
+    def exportData(export_button):
         global datefrom, dateTo
         print("button Interactive")
         if datefrom == None or dateTo == None:
             return
+        export_button.configure(state="disabled")
         send_email_with_attachment("yourFranzkafka@gmail.com", datefrom, dateTo)
         Data_Send_page = tk.Frame(root, width=500, height=300, bg="green")
         Data_Send_page.pack(fill="both", expand=True)
@@ -222,7 +220,7 @@ def adminMain(root, return_to_idle):
         Data_Send_label.bind("<Button-1>", lambda event: on_frame_touch(event, Data_Send_label))
 
     export_button = ctk.CTkButton(canvas, text="Export", width=331, height=60, corner_radius=50, 
-                                   bg_color="white", fg_color="green", font=("Arial", 24, 'bold'), text_color="White", command = exportData)
+                                   bg_color="white", fg_color="green", font=("Arial", 24, 'bold'), text_color="White", command = lambda: exportData(export_button))
     export_button.place(x=ww - 384, y=wh - 195)
 
     button_img = ctk.CTkImage(

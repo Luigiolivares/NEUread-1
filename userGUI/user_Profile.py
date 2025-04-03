@@ -59,11 +59,11 @@ def Main_user_page(content, RFID, root):
     Role = ctk.CTkLabel(profile, text='Student', font=("Arial", 25), text_color="black")
     Role.place(relx=0.1503, rely=0.6)
 
-    current_books_container = ctk.CTkFrame(user_page, width=(1110), height=(0.46 * wh), fg_color="white", border_color='#004AAD', border_width=10,
+    current_books_container = ctk.CTkFrame(user_page, width=(1110), height=(0.46 * wh), fg_color="white", border_color='#5088FC', border_width=10,
                       corner_radius=15)
     current_books_container.place(relx=0.5, rely=0.65, anchor='center')
 
-    current_frame = ctk.CTkFrame(current_books_container, width=(300), height=(50), fg_color="#004AAD",
+    current_frame = ctk.CTkFrame(current_books_container, width=(300), height=(50), fg_color="#5088FC",
                       corner_radius=20)
     current_frame.place(relx=0.5, rely=0.03, anchor='n')
 
@@ -226,30 +226,30 @@ def penalty2(content, RFID, root):
     password = ctk.CTkEntry(laman, width=750, height=70, corner_radius=50, fg_color='white',
                               text_color="black", placeholder_text="Enter Security Password", font=("Arial", 20), show="•") 
     password.place(relx=0.5, rely=0.72, anchor="center")
-    def submit_password():
+    def submit_password(entry_button):
         user_input = password.get()
         access = bcrypt.checkpw(user_input.encode(), passwd.encode())
         if access:
             penalty(RFID, 0)
-            print("Entered Password Correct:", user_input)
-            pop_up_page = tk.Frame(penalty1_page, width=500, height=300, bg="dark blue")
+            entry_button.configure(state="disabled")
+            pop_up_page = tk.Frame(penalty1_page, width=500, height=300, bg="89AEFF")
             pop_up_page.pack(fill="both", expand=True)
 
             # Bind the frame touch event, passing the frame as an argument
             pop_up_page.bind("<Button-1>", lambda event: on_frame_touch(event, pop_up_page, content, root))
 
             pop_up_label = tk.Label(pop_up_page, text='Penalty removed!', fg="white", font=("Arial", 55, "bold"), 
-                            bg="dark blue", wraplength=1500)
+                            bg="89AEFF", wraplength=1500)
             pop_up_label.place(relx=0.5, rely=0.45, anchor="center")
 
             pop_up_label2 = tk.Label(pop_up_page, text="Please touch the screen to continue", fg="white", 
-                             font=("Arial", 20, "bold"), bg="dark blue")
+                             font=("Arial", 20, "bold"), bg="89AEFF")
             pop_up_label2.place(relx=0.5, rely=0.53, anchor="center")
     def on_frame_touch(event, frame, content, root):
         if event.widget == frame:
             frame.unbind("<Button-1>")
             Main_user_page(content, RFID, root)
-    entry_button = ctk.CTkButton(password, text='', image=btn, width=(0.05 * ww), fg_color='white', command = submit_password)
+    entry_button = ctk.CTkButton(password, text='', image=btn, width=(0.05 * ww), fg_color='white', command = submit_password(entry_button))
     entry_button.place(relx=0.97, rely=0.5, anchor='e')
-    cancel_btn = ctk.CTkButton(laman, text='Cancel', font=("Arial", 32, "bold"), text_color="White", fg_color="darkblue", corner_radius=20, width=50, height=50) 
+    cancel_btn = ctk.CTkButton(laman, text='Cancel', font=("Arial", 32, "bold"), text_color="White", fg_color="darkblue", corner_radius=20, width=50, height=50, command= lambda: Main_user_page(content, RFID, root)) 
     cancel_btn.place(relx=0.5, rely=0.85, anchor="center")

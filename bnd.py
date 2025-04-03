@@ -12,7 +12,7 @@ db = mysql.connector.connect(
     database = "neuread"
 )
 
-mycursor = db.cursor()
+mycursor = db.cursor(buffered=True)
 
 mycursor.execute("USE neuread")
 def getUserInfo(RFID):
@@ -73,10 +73,10 @@ def showGenres(nthTo, nthFrom):
 def adminCheck(RFID):
     mycursor.execute("SELECT Email FROM users WHERE RFID = %s", (RFID,))
     result = mycursor.fetchone()
-    if result and result[0] == "Admin":
-        return True
-    else: 
-        return False
+
+    mycursor.fetchall()  # Ensures all remaining results are cleared, preventing "Unread result found"
+    
+    return result is not None and result[0] == "Admin"
 def addBorrowBook(RFID, Book_ID, Date_Borrowed, Deadline, Date_returned):
     mycursor.execute("INSERT INTO borrowed_books (RFID, Book_ID, Date_Borrowed, Deadline, Date_returned) VALUES (%s, %s, %s, %s, %s)", (RFID, Book_ID, Date_Borrowed, Deadline, Date_returned))
     mycursor.execute(
@@ -231,7 +231,7 @@ def ifTheyHaveTheBook(bookID, RFID):
     borrowerRFID = mycursor.fetchone()
     print(RFID)
     if borrowerRFID:
-        print(borrowerRFID[0])
+        print("RFID of user: ", RFID, " RFID OF THE BORROWER: ", borrowerRFID[0])
         if RFID == borrowerRFID[0]:
             print("true")
             return True
@@ -239,4 +239,8 @@ def ifTheyHaveTheBook(bookID, RFID):
             print("false")
             return False
     print("wala siyang record")
-addBorrowBook("0010516239", 1013, "2025-02-24 09:00:00", "2025-02-26", None)
+def ifTheyExceedBorrow(RFID):
+    mycursor.execute("SELECT COUNT(*) FROM borrowed_books WHERE RFID = %s AND Date_returned IS NULL", (RFID,))
+    borrowed_count = mycursor.fetchone()[0]
+
+    return borrowed_count >= 2

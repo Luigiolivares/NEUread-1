@@ -41,10 +41,10 @@ def Main_history_page(content, RFID):
     time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
     time_label.place(relx=0.07, rely=0.2)
     update_date()
-    title_label = ctk.CTkLabel(history_page, text="Book History", font=("Arial", 30, "bold"), text_color="#004AAD")
+    title_label = ctk.CTkLabel(history_page, text="Book History", font=("Arial", 30, "bold"), text_color="#5088FC")
     title_label.place(relx=0.5, rely=0.15, anchor="center")
     
-    frame_box = ctk.CTkFrame(history_page, width=1100, height=600, fg_color="white", corner_radius=15, border_width=5, border_color="#004AAD")
+    frame_box = ctk.CTkFrame(history_page, width=1100, height=600, fg_color="white", corner_radius=15, border_width=5, border_color="#5088FC")
     frame_box.place(relx=0.5, rely=0.23, anchor="n")
     image_cache = {}
     def load_image(filename, size=(50, 50)):

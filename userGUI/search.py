@@ -176,7 +176,7 @@ def Main_search_page(content):
 
     # Frame for all books (already exists)
     books = ctk.CTkFrame(content, width=(0.8 * ww), height=650, fg_color="white", 
-                      corner_radius=20, border_width=15, border_color="#004AAD")
+                      corner_radius=20, border_width=15, border_color="#5088FC")
     books.place(relx=0.5, rely=0.55, anchor="center")
 
     # Divider Line
