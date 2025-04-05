@@ -5,7 +5,8 @@ import bcrypt
 from tkinter import Canvas
 from bnd import *
 from datetime import datetime
-def admin(content, return_to_idle):
+from keyboard import *
+def admin(content, return_to_idle, root):
     passwd = "$2b$12$NhmTJ0kKyQdVdRJoIGbHBOA5kb1Bb7EB5sXY2MIprdTC5zC3Aqa2q"
     ww = content.winfo_screenwidth()
     wh = content.winfo_screenheight()
@@ -31,12 +32,14 @@ def admin(content, return_to_idle):
 
     password = ctk.CTkEntry(password_frame, width=650, height=65, font=("Arial", 32, 'bold'), 
                             fg_color="dark sea green", text_color="Black", corner_radius=50, border_width=0, show="•")
+    password.bind("<Button-1>", lambda event: open_keyboard(root, password, event))
     password.place(relx=0.26, rely=0.5)
     def submit_password():
+        close()
         user_input = password.get()
         access = bcrypt.checkpw(user_input.encode(), passwd.encode())
         if access:
-            adminMain(content, return_to_idle)
+            adminMain(root, return_to_idle, content)
     enter_option = ctk.CTkButton(password_frame, text="Enter", width=200, height=60, corner_radius=50, 
                                  bg_color="white", fg_color="green", font=("Arial", 32, 'bold'), text_color="White", command=submit_password)
     enter_option.place(relx=0.35, rely=0.67)
@@ -63,7 +66,7 @@ def create_rounded_rectangle(canvas, x1, y1, x2, y2, radius=25, color="white"):
     ]
     return canvas.create_polygon(points, smooth=True, fill=color, outline=color)
 
-def adminMain(root, return_to_idle):
+def adminMain(root, return_to_idle, content):
     innitNums = getUserAndBookNum()
     ww = root.winfo_screenwidth()
     wh = root.winfo_screenheight()
@@ -163,6 +166,7 @@ def adminMain(root, return_to_idle):
 
     date1_bar = ctk.CTkEntry(root, width=220, height=70, corner_radius=0, fg_color='white',
                               text_color="dark gray", placeholder_text="YYYY-MM-DD", font=("Arial", 23))
+    date1_bar.bind("<Button-1>", lambda event: open_keyboard(root, date1_bar, event))
     date1_bar.place(x=1210, y=350)
 
     to_label = tk.Label(root, text="TO", wraplength="200", font=("Arial", 26, "bold"), fg="white", bg="yellow green")
@@ -170,10 +174,12 @@ def adminMain(root, return_to_idle):
 
     date2_bar = ctk.CTkEntry(root, width=220, height=70, corner_radius=0, fg_color='white',
                               text_color="dark gray", placeholder_text="YYYY-MM-DD", font=("Arial", 23))
+    date2_bar.bind("<Button-1>", lambda event: open_keyboard(root, date2_bar, event))
     date2_bar.place(x=1320, y=510, anchor="center")
     def showData():
         global datefrom, dateTo
         try:
+            close()
             datetime.strptime(date1_bar.get(), "%Y-%m-%d")
             datetime.strptime(date2_bar.get(), "%Y-%m-%d")
             datefrom = date1_bar.get()
@@ -201,7 +207,7 @@ def adminMain(root, return_to_idle):
     def on_frame_touch(event, frame):
         if event.widget == frame:
             frame.unbind("<Button-1>")
-            return_to_idle()
+            admin(content, return_to_idle, root)
     def exportData(export_button):
         global datefrom, dateTo
         print("button Interactive")

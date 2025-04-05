@@ -64,7 +64,7 @@ def start_neuread_app(RFID, root, return_to_idle):
     button2.image = button2_icon
     button2.pack(fill='x', expand=True, pady=1)
 
-    button3 = ctk.CTkButton(sidebar, text = "", command=lambda: Main_search_page(content), image=button3_icon, compound='top', fg_color='#5088FC', border_width=0, hover_color="#0067D9")
+    button3 = ctk.CTkButton(sidebar, text = "", command=lambda: Main_search_page(content, root), image=button3_icon, compound='top', fg_color='#5088FC', border_width=0, hover_color="#0067D9")
     button3.image = button3_icon
     button3.pack(fill='x', expand=True, pady=1)
 

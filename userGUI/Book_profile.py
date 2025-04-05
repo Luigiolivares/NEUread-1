@@ -20,6 +20,9 @@ def add_corners(im, rad, ww, wh):
 
 
 def book_profile(content, bookID):
+    for widget in content.winfo_children():
+        if isinstance(widget, tk.Frame):
+            widget.destroy()
     print(bookID)
     ww = content.winfo_screenwidth()
     wh = content.winfo_screenheight()
@@ -35,11 +38,11 @@ def book_profile(content, bookID):
 
     time_border = ctk.CTkFrame(profile, width=(0.08 * ww), height=(0.067 * wh), fg_color="azure3", 
                       corner_radius=13, border_width=15, border_color="azure3")
-    time_border.place(relx=0.89, rely=0.05)
+    time_border.place(relx=0.07, rely=0.2, anchor = "center") 
 
     date_border = ctk.CTkFrame(profile, width=(0.13 * ww), height=(0.069 * wh), fg_color="azure3", 
                       corner_radius=13, border_width=15, border_color="azure3")
-    date_border.place(relx=0.03, rely=0.05)
+    date_border.place(relx=0.07, rely=0.2, anchor = "center") 
 
     def update_date():
         ph_timezone = pytz.timezone("Asia/Manila")
@@ -51,18 +54,18 @@ def book_profile(content, bookID):
         profile.after(1000, update_date)
 
     date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
-    date_label.place(relx=0.07, rely=0.2)
+    date_label.place(relx=0.5, rely=0.5, anchor = "center")
 
     time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
-    time_label.place(relx=0.07, rely=0.2)
+    time_label.place(relx=0.5, rely=0.5, anchor = "center")
     update_date()
 
     info = ctk.CTkFrame(profile, width=(0.78 * ww), height=(0.75 * wh), fg_color="white", 
-                      corner_radius=20, border_width=15, border_color="5088FC")
+                      corner_radius=20, border_width=5, border_color="#5088FC")
     info.place(relx=0.5, rely=0.55, anchor="center") 
 
     page_label = ctk.CTkLabel(info, text='Book Profile', font=("Arial", 40, "bold"), text_color="blue")
-    page_label.place(relx=0.09, rely=0.05, anchor='nw')
+    page_label.place(relx=0.5, rely=0.05, anchor='center')
 
     book_cover = ctk.CTkLabel(info, text='', image=book_cover_image)
     book_cover.place(relx=0.0855, rely=0.12)

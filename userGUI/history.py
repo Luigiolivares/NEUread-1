@@ -14,6 +14,10 @@ book_buttons = []
 
 def Main_history_page(content, RFID):
     global showBook
+    for widget in content.winfo_children():
+        if isinstance(widget, tk.Frame):
+            widget.destroy()
+    showBook = 0
     history_page = tk.Frame(content)
     history_page.place(relx=0, rely=0, relwidth=1, relheight=1)
     ww = history_page.winfo_screenwidth()
@@ -36,10 +40,10 @@ def Main_history_page(content, RFID):
         history_page.after(1000, update_date)
 
     date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
-    date_label.place(relx=0.07, rely=0.2)
+    date_label.place(relx=0.5, rely=0.5, anchor = "center")
 
     time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
-    time_label.place(relx=0.07, rely=0.2)
+    time_label.place(relx=0.5, rely=0.5, anchor = "center")
     update_date()
     title_label = ctk.CTkLabel(history_page, text="Book History", font=("Arial", 30, "bold"), text_color="#5088FC")
     title_label.place(relx=0.5, rely=0.15, anchor="center")
