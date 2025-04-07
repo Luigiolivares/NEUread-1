@@ -119,11 +119,11 @@ def adminMain(root, return_to_idle, content):
 
     logo = ctk.CTkImage(
     Image.open("logoo.png"),
-    size=(int(0.26 * ww), int(0.21 * wh))
+    size=(int(0.26 * ww), int(0.23 * wh))
 )
     book = ctk.CTkImage(
-    Image.open("magkakatabingLibro.jpeg"),
-    size=(int(0.20 * ww), int(0.23 * wh))
+    Image.open("books.png"),
+    size=(int(0.20 * ww), int(0.30 * wh))
 )
     bookopen = ctk.CTkImage(
     Image.open("bookopen.png"),
@@ -191,7 +191,7 @@ def adminMain(root, return_to_idle, content):
 
 # For 3 books design
     book_label = ctk.CTkLabel(root, image=book, text="")
-    book_label.place(x=810, y=530)
+    book_label.place(x=810, y=500)
 
 # For data shown box
     data_label = ctk.CTkFrame(root, width=int(0.02 * ww), height=int(0.01 * wh), fg_color="#5088FC")
@@ -268,16 +268,16 @@ def adminMain(root, return_to_idle, content):
     export_button.place(x=1320, y=wh - 130, anchor = "center")
 
     button_img = ctk.CTkImage(
-    Image.open("logOut.jpeg"),
+    Image.open("logOut.PNG"),
     size=(75, 75)
 )
     button = ctk.CTkButton(root, image=button_img, text="", fg_color="transparent", hover_color="lightgray", border_width=0, corner_radius=1000, command = return_to_idle)
 
     button.place(x=40, y=780)
-    import_button = ctk.CTkButton(root, text="Import an Excel file to the Database", command=open_book_form, width=380, height=60, fg_color="#5088FC", text_color="white", font=("Arial", 16, "bold"), corner_radius= 50) 
+    import_button = ctk.CTkButton(root, text="Add Items", command=open_book_form, width=180, height=60, fg_color="#5088FC", text_color="white", font=("Arial", 16, "bold"), corner_radius= 50) 
     import_button.place(x=225, y=800)
-    deleteBookButton = ctk.CTkButton(root, text="Delete Book", command=open_delete_book_form, width=180, height=60, fg_color="#5088FC", text_color="white", font=("Arial", 16, "bold"), corner_radius= 50) 
-    deleteBookButton.place(x=700, y=800)
+    deleteBookButton = ctk.CTkButton(root, text="Delete Items", command=open_delete_book_form, width=180, height=60, fg_color="#5088FC", text_color="white", font=("Arial", 16, "bold"), corner_radius= 50) 
+    deleteBookButton.place(x=500, y=800)
 def open_book_form():
     global popup_window_create
 
@@ -385,12 +385,6 @@ def open_delete_book_form():
                 lbl.configure(text="")
         except Exception as e:
             messagebox.showerror("Error", f"Failed to delete book: {e}")
-            
-    ctk.CTkButton(popup_window_delete, text="Search", command=search_book, fg_color="#5088FC").pack(pady=10)
-    delete_btn = ctk.CTkButton(popup_window_delete, text="Delete Book", command=delete_book, fg_color="#FF5A5F", state="disabled")
-    delete_btn.pack(pady=10)
-
-    # Search function
     def search_book():
         book_id = book_id_entry.get()
         if not book_id.isdigit():
@@ -414,3 +408,6 @@ def open_delete_book_form():
             delete_btn.configure(state="disabled")
             for lbl in labels.values():
                 lbl.configure(text="")
+    ctk.CTkButton(popup_window_delete, text="Search", command=search_book, fg_color="#5088FC").pack(pady=10)
+    delete_btn = ctk.CTkButton(popup_window_delete, text="Delete Book", command=delete_book, fg_color="#FF5A5F", state="disabled")
+    delete_btn.pack(pady=10)

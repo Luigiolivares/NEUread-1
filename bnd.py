@@ -347,4 +347,4 @@ def delete_book_by_ID(Book_ID):
         return affected_rows
     except mysql.connector.Error as err:
         raise err
-print(searchBookIDtoDelete(123123123))
+print(adminCheck("0010542281"))
