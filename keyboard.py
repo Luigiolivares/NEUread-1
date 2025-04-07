@@ -6,12 +6,14 @@ class CTkOnScreenKeyboard:
     keyboard_closed_once = False  # Flag to prevent auto-popup after close
 
     def __init__(self, master, entry):
-        if CTkOnScreenKeyboard.instance:
-            CTkOnScreenKeyboard.instance.top.lift()
-            return
-
         # If the keyboard was closed before, ignore future auto-opens
         if CTkOnScreenKeyboard.keyboard_closed_once:
+            return
+
+        if CTkOnScreenKeyboard.instance:
+            # Update to the new entry if keyboard is already open
+            CTkOnScreenKeyboard.instance.entry = entry
+            CTkOnScreenKeyboard.instance.top.lift()
             return
 
         self.entry = entry
@@ -30,7 +32,7 @@ class CTkOnScreenKeyboard:
         self.keyboard_frame = ctk.CTkFrame(self.top, fg_color="transparent")
         self.keyboard_frame.place(relx=0.5, rely=0.5, anchor="center")
         self.create_keys()
-        
+
     def create_keys(self):
         keys = [
             ['1','2','3','4','5','6','7','8','9','0','-'],
@@ -53,7 +55,6 @@ class CTkOnScreenKeyboard:
                                         command=lambda k=key: self.insert_char(k))
                     btn.grid(row=r, column=c, padx=2, pady=4)
 
-
     def insert_char(self, char):
         self.entry.insert("end", char)
 
@@ -67,9 +68,10 @@ class CTkOnScreenKeyboard:
         CTkOnScreenKeyboard.keyboard_closed_once = True  # prevent auto-reopen
         self.top.destroy()
 
-def open_keyboard(root, entry, event):
+def open_keyboard(root, entry, event=None):
     CTkOnScreenKeyboard.keyboard_closed_once = False
     CTkOnScreenKeyboard(root, entry)
+
 def close():
     if CTkOnScreenKeyboard.instance:
         CTkOnScreenKeyboard.instance.on_close()

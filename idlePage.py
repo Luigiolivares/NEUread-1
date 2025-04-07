@@ -13,7 +13,7 @@ window_width = root.winfo_screenwidth()
 window_height = root.winfo_screenheight() 
 last_scan_time = 0
 active = False
-rfid_data = "0010556159"
+rfid_data = "0010542281"
 def create_idle_page():
     """Creates the idle page UI."""
     global idle_frame

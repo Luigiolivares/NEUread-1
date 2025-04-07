@@ -12,7 +12,7 @@ def Main_user_page(content, RFID, root):
     for widget in content.winfo_children():
         if isinstance(widget, tk.Frame):
             widget.destroy()
-    person = open("admin_pic.png", "rb")
+    person = open("userGray.png", "rb")
     ww = content.winfo_screenwidth()
     wh = content.winfo_screenheight()
     profileInfo = getUserInfo(RFID)
@@ -241,7 +241,8 @@ def penalty2(content, RFID, root):
             entry_button.configure(state="disabled")
             pop_up_page = tk.Frame(penalty1_page, width=500, height=300, bg="89AEFF")
             pop_up_page.pack(fill="both", expand=True)
-
+            left_border = tk.Frame(pop_up_page, width=5, height=300, bg="white")
+            left_border.place(x=0, rely=0, relheight=1)
             # Bind the frame touch event, passing the frame as an argument
             pop_up_page.bind("<Button-1>", lambda event: on_frame_touch(event, pop_up_page, content, root))
 

@@ -91,6 +91,10 @@ def start_neuread_app(RFID, root, return_to_idle):
     pop_up_page = tk.Frame(content, width=500, height=300, bg="#89AEFF")
     pop_up_page.pack(fill="both", expand=True)
 
+# White border on the left side
+    left_border = tk.Frame(pop_up_page, width=5, height=300, bg="white")
+    left_border.place(x=0, rely=0, relheight=1)
+
     pop_up_label = tk.Label(pop_up_page, text="Welcome to NEURead!", fg="white", font=("Arial", 60, "bold"), bg="#89AEFF")
     pop_up_label.place(relx=0.5, rely=0.45, anchor="center")
 

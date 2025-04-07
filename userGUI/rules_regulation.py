@@ -23,7 +23,7 @@ def create_rounded_frame(parent, width, height, radius=20):
 def create_navigation_buttons(content):
     ww = content.winfo_screenwidth()  
     wh = content.winfo_screenheight()
-    button_frame = ctk.CTkFrame(content, width=(0.50 * ww), height=80, fg_color="white")  # Set width and height in the constructor
+    button_frame = ctk.CTkFrame(content, width=(0.50 * ww), height=80)  # Set width and height in the constructor
     button_frame.place(relx=0.5, rely=0.89, anchor="center")  # Center the button frame at the bottom
 
     # Button list

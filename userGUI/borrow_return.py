@@ -112,6 +112,9 @@ ON_admin_profile = open("admin_blue_pic.png", "rb")
 DONE_book = open("book_done_pic.png", "rb")
 DONE_admin = open("admin_done_prev_ui.png", "rb")
 
+user_profile = open("userGray.png", "rb")
+ON_user_profile = open("userBlue.png", "rb")
+
 # place here for all photo images
 def borrow_page(content, root, pressedPurpose):
     global purpose, topLabel,bottomLabel, bookIcon, adminIcon, userIcon, ww, wh, bookPart, adminPart, userPart
@@ -122,7 +125,7 @@ def borrow_page(content, root, pressedPurpose):
     book_pic = ctk.CTkImage(Image.open(book), size=((0.2 * ww), (0.35 * wh))) 
     dot_pic = ctk.CTkImage(Image.open(dot), size=((0.065 * ww), (0.06 * wh)))
     user_pic = ctk.CTkImage(Image.open(admin_profile), size=((0.13 * ww), (0.23 * wh))) 
-    admin_pic = ctk.CTkImage(Image.open(admin_profile), size=((0.13 * ww), (0.23 * wh))) 
+    admin_pic = ctk.CTkImage(Image.open(user_profile), size=((0.13 * ww), (0.23 * wh))) 
 
     bookIcon = book_pic
     adminIcon = admin_pic
@@ -269,14 +272,14 @@ def getAdmin(content, root, Title):
     root.bind("<Key>", lambda event: keyPressed(event, content, root))
 
 def getUser():
-    global topLabel, userIcon, adminIcon, ww, wh, adminPart, userPart, bottomLabel, DONE_admin
+    global topLabel, userIcon, adminIcon, ww, wh, adminPart, userPart, bottomLabel, DONE_admin, ON_user_profile
 
     new_adminImage = ctk.CTkImage(
         light_image=Image.open(DONE_admin),
         size=((0.13 * ww), (0.23 * wh))
     )
     new_userImage = ctk.CTkImage(
-        light_image=Image.open(ON_admin_profile),
+        light_image=Image.open(ON_user_profile),
         size=((0.2 * ww), (0.35 * wh))
     )
     adminPart.configure(image = new_adminImage)
@@ -289,7 +292,9 @@ def completeTransaction(RFID, content, root):
 
     pop_up_page = tk.Frame(content, width=500, height=300, bg="#89AEFF")
     pop_up_page.pack(fill="both", expand=True)
-
+    
+    left_border = tk.Frame(pop_up_page, width=5, height=300, bg="white")
+    left_border.place(x=0, rely=0, relheight=1)
     # Bind the frame touch event, passing the frame as an argument
     pop_up_page.bind("<Button-1>", lambda event: on_frame_touch(event, pop_up_page, content, root))
 
@@ -358,9 +363,9 @@ def keyPressed(event, content, root):
         elif rfid_data and adminRFID:
             user = getUserInfo(rfid_data)
             if user == ([], [], []) or user[0][0][0] == initialUser:
+                root.unbind("<Key>")
                 successNotif("please wait for the Pop-up screen", content, root)
                 root.after(100, lambda: completeTransaction(rfid_data, content, root))
-                root.unbind("<Key>")
                 print(f"User Entered: {user[0][0][1]}")
             else:
                 rfid_data = ""
