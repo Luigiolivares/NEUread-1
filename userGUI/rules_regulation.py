@@ -23,7 +23,7 @@ def create_rounded_frame(parent, width, height, radius=20):
 def create_navigation_buttons(content):
     ww = content.winfo_screenwidth()  
     wh = content.winfo_screenheight()
-    button_frame = ctk.CTkFrame(content, width=(0.50 * ww), height=80, fg_color="white")  # Set width and height in the constructor
+    button_frame = ctk.CTkFrame(content, width=(0.50 * ww), height=80)  # Set width and height in the constructor
     button_frame.place(relx=0.5, rely=0.89, anchor="center")  # Center the button frame at the bottom
 
     # Button list
@@ -42,6 +42,9 @@ def create_navigation_buttons(content):
     button_frame.winfo_children()[4].configure(command=lambda: show_decor_page(content))
 
 def Main_rules_page(content):
+    for widget in content.winfo_children():
+        if isinstance(widget, tk.Frame):
+            widget.destroy()
     ww = content.winfo_screenwidth()
     wh = content.winfo_screenheight()
     time_border = ctk.CTkFrame(content, width=(0.08 * ww), height=(0.067 * wh), fg_color="azure3", 
@@ -62,10 +65,10 @@ def Main_rules_page(content):
         content.after(1000, update_date)
 
     date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
-    date_label.place(relx=0.07, rely=0.2)
+    date_label.place(relx=0.5, rely=0.5, anchor = "center") 
 
     time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
-    time_label.place(relx=0.07, rely=0.2)
+    time_label.place(relx=0.5, rely=0.5, anchor = "center") 
     update_date()
     round_canvas1 = create_rounded_frame(content, width=1200, height=600)  
     round_canvas1.place(relx=0.5, rely=0.46, anchor="center")  # Centered

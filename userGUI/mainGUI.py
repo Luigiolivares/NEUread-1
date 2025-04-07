@@ -64,7 +64,7 @@ def start_neuread_app(RFID, root, return_to_idle):
     button2.image = button2_icon
     button2.pack(fill='x', expand=True, pady=1)
 
-    button3 = ctk.CTkButton(sidebar, text = "", command=lambda: Main_search_page(content), image=button3_icon, compound='top', fg_color='#5088FC', border_width=0, hover_color="#0067D9")
+    button3 = ctk.CTkButton(sidebar, text = "", command=lambda: Main_search_page(content, root), image=button3_icon, compound='top', fg_color='#5088FC', border_width=0, hover_color="#0067D9")
     button3.image = button3_icon
     button3.pack(fill='x', expand=True, pady=1)
 
@@ -90,6 +90,10 @@ def start_neuread_app(RFID, root, return_to_idle):
     
     pop_up_page = tk.Frame(content, width=500, height=300, bg="#89AEFF")
     pop_up_page.pack(fill="both", expand=True)
+
+# White border on the left side
+    left_border = tk.Frame(pop_up_page, width=5, height=300, bg="white")
+    left_border.place(x=0, rely=0, relheight=1)
 
     pop_up_label = tk.Label(pop_up_page, text="Welcome to NEURead!", fg="white", font=("Arial", 60, "bold"), bg="#89AEFF")
     pop_up_label.place(relx=0.5, rely=0.45, anchor="center")

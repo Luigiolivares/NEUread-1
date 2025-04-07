@@ -14,6 +14,10 @@ book_buttons = []
 
 def Main_history_page(content, RFID):
     global showBook
+    for widget in content.winfo_children():
+        if isinstance(widget, tk.Frame):
+            widget.destroy()
+    showBook = 0
     history_page = tk.Frame(content)
     history_page.place(relx=0, rely=0, relwidth=1, relheight=1)
     ww = history_page.winfo_screenwidth()
@@ -36,10 +40,10 @@ def Main_history_page(content, RFID):
         history_page.after(1000, update_date)
 
     date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
-    date_label.place(relx=0.07, rely=0.2)
+    date_label.place(relx=0.5, rely=0.5, anchor = "center")
 
     time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
-    time_label.place(relx=0.07, rely=0.2)
+    time_label.place(relx=0.5, rely=0.5, anchor = "center")
     update_date()
     title_label = ctk.CTkLabel(history_page, text="Book History", font=("Arial", 30, "bold"), text_color="#5088FC")
     title_label.place(relx=0.5, rely=0.15, anchor="center")
@@ -103,27 +107,27 @@ def Main_history_page(content, RFID):
             print(bookID)
             book_button = ctk.CTkButton(history_page, text = "", image=ctk_image, compound="top", fg_color="white", hover_color="lightblue", text_color="black", font=("Arial", 14, "bold"), 
                                         command = lambda bookID=bookID: book_profile(content, bookID))
-            book_button.place(relx=0.18, rely=0.38 + (i * 0.20), anchor="w")
+            book_button.place(relx=0.14, rely=0.38 + (i * 0.20), anchor="w")
             book_button.image = ctk_image  # Keep reference to prevent garbage collection
             book_buttons.append(book_button)
         
             # Create labels for title, author, borrowed, and returned dates
-            titleText = ctk.CTkLabel(history_page, text=title, font=("Arial", 14, "bold"), fg_color="white", text_color="black", wraplength=350, justify="left")
+            titleText = ctk.CTkLabel(history_page, text=title, font=("Arial", 18, "bold"), fg_color="white", text_color="black", wraplength=350, justify="left")
             titleText.place(relx=0.28, rely=0.33 + (i * 0.20))
 
-            authorText = ctk.CTkLabel(history_page, text=author, font=("Arial", 14), fg_color="white", text_color="black")
+            authorText = ctk.CTkLabel(history_page, text=author, font=("Arial", 18), fg_color="white", text_color="black")
             authorText.place(relx=0.28, rely=0.38 + (i * 0.20))
 
-            labelBorrowed = ctk.CTkLabel(history_page, text="Borrowed:", font=("Arial", 13, "bold"), text_color="red", fg_color="white")
+            labelBorrowed = ctk.CTkLabel(history_page, text="Borrowed:", font=("Arial", 17, "bold"), text_color="red", fg_color="white")
             labelBorrowed.place(relx=0.60, rely=0.33 + (i * 0.20))
 
-            date_borrowed = ctk.CTkLabel(history_page, text=borrowed, font=("Arial", 13), fg_color="white", text_color="black")
+            date_borrowed = ctk.CTkLabel(history_page, text=borrowed, font=("Arial", 17), fg_color="white", text_color="black")
             date_borrowed.place(relx=0.66, rely=0.33 + (i * 0.20))
 
-            labelReturned = ctk.CTkLabel(history_page, text="Returned:", font=("Arial", 13, "bold"), text_color="red", fg_color="white")
+            labelReturned = ctk.CTkLabel(history_page, text="Returned:", font=("Arial", 17, "bold"), text_color="red", fg_color="white")
             labelReturned.place(relx=0.60, rely=0.36 + (i * 0.20))
 
-            date_returned = ctk.CTkLabel(history_page, text=returned, font=("Arial", 13), fg_color="white", text_color="black")
+            date_returned = ctk.CTkLabel(history_page, text=returned, font=("Arial", 17), fg_color="white", text_color="black")
             date_returned.place(relx=0.66, rely=0.36 + (i * 0.20))
             
             book_buttons.append(titleText)

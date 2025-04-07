@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import time
 from PIL import Image, ImageTk
 import pytz
-
+from keyboard import *
 ww = None
 wh = None
 rfid_data = ""
@@ -74,10 +74,10 @@ def Main_borrow_return_page(content, userID, main):
         frame.after(1000, update_date)
 
     date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
-    date_label.place(relx=0.07, rely=0.2)
+    date_label.place(relx=0.5, rely=0.5, anchor = "center")
 
     time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
-    time_label.place(relx=0.07, rely=0.2)
+    time_label.place(relx=0.5, rely=0.5, anchor = "center")
     update_date()
     
 # Load Button Icons
@@ -112,6 +112,9 @@ ON_admin_profile = open("admin_blue_pic.png", "rb")
 DONE_book = open("book_done_pic.png", "rb")
 DONE_admin = open("admin_done_prev_ui.png", "rb")
 
+user_profile = open("userGray.png", "rb")
+ON_user_profile = open("userBlue.png", "rb")
+
 # place here for all photo images
 def borrow_page(content, root, pressedPurpose):
     global purpose, topLabel,bottomLabel, bookIcon, adminIcon, userIcon, ww, wh, bookPart, adminPart, userPart
@@ -122,7 +125,7 @@ def borrow_page(content, root, pressedPurpose):
     book_pic = ctk.CTkImage(Image.open(book), size=((0.2 * ww), (0.35 * wh))) 
     dot_pic = ctk.CTkImage(Image.open(dot), size=((0.065 * ww), (0.06 * wh)))
     user_pic = ctk.CTkImage(Image.open(admin_profile), size=((0.13 * ww), (0.23 * wh))) 
-    admin_pic = ctk.CTkImage(Image.open(admin_profile), size=((0.13 * ww), (0.23 * wh))) 
+    admin_pic = ctk.CTkImage(Image.open(user_profile), size=((0.13 * ww), (0.23 * wh))) 
 
     bookIcon = book_pic
     adminIcon = admin_pic
@@ -146,10 +149,10 @@ def borrow_page(content, root, pressedPurpose):
         bors.after(1000, update_date)
 
     date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
-    date_label.place(relx=0.07, rely=0.2)
+    date_label.place(relx=0.5, rely=0.5, anchor = "center")
 
     time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
-    time_label.place(relx=0.07, rely=0.2)
+    time_label.place(relx=0.5, rely=0.5, anchor = "center")
     update_date()
 
     page_bg = ctk.CTkFrame(bors, width=(0.510 * ww), height=(0.14 * wh), fg_color="white", 
@@ -182,6 +185,8 @@ def borrow_page(content, root, pressedPurpose):
     # Create the search bar entry inside the border
     book_id_entry = ctk.CTkEntry(bors, width=750, height=70, corner_radius=50, fg_color='white',
                               text_color="black", placeholder_text="Enter Book ID", font=("Arial", 20))
+    book_id_entry.bind("<Button-1>", lambda event: open_keyboard(root, book_id_entry, event))
+
     book_id_entry.place(relx=0.5, rely=0.8, anchor='center')
 
     entry_button = ctk.CTkButton(book_id_entry, text='', image=search_image, width=(0.05 * ww), fg_color='white', command= lambda: save_input(book_id_entry, inst_label, content, root))
@@ -199,15 +204,28 @@ def borrow_page(content, root, pressedPurpose):
     userPart = admin
 
 def errorNotif(err, content, root):
-    notif_frame = ctk.CTkFrame(content, width=520, height=50, corner_radius=20, fg_color="#ADD8E6", border_width=3, border_color="blue")
+    notif_frame = ctk.CTkFrame(content, width=520, height=50, corner_radius=20, fg_color="#e61e1e", border_width=3, border_color="red")
     notif_frame.place(relx= 0.5, rely=0.7, anchor= "center")
-    notif = ctk.CTkLabel(notif_frame, text=err, font=("Arial", 25, "bold"), text_color="blue")
+    notif = ctk.CTkLabel(notif_frame, text=err, font=("Arial", 25, "bold"), text_color="dark red")
     notif.place(relx= 0.5, rely=0.5, anchor= "center")  # Show the label
+    root.after(3000, lambda: notif_frame.destroy())
+def successNotif(success, content, root):
+    print("NAG START NA")
+    notif_frame = ctk.CTkFrame(content, width=520, height=100, corner_radius=20, fg_color="#5ee332", border_width=3, border_color="green")
+    notif_frame.place(relx= 0.5, rely=0.7, anchor= "center")
+    notifTag = ctk.CTkLabel(notif_frame, text="Transaction Successful:", font=("Arial", 25, "bold"), text_color="green")
+    notifTag.place(relx= 0.5, rely=0.3, anchor= "center")
+    notif = ctk.CTkLabel(notif_frame, text=success, font=("Arial", 25, "bold"), text_color="green")
+    notif.place(relx= 0.5, rely=0.7, anchor= "center")  # Show the label
     root.after(3000, lambda: notif_frame.destroy())
 
 def save_input(book_id_entry, inst_label, content, root):
     global bookID, Title, ww, wh, initialUser
     book_id = book_id_entry.get()
+    penalty = checkPenalty(initialUser)
+    if penalty:
+        errorNotif("You have Penalty", content, root)
+        return
     search_result = searchBookID(book_id)
     if not search_result:
         errorNotif("Book ID doesnt exist", content, root)
@@ -232,6 +250,7 @@ def save_input(book_id_entry, inst_label, content, root):
     inst_label.place_forget()
     bookID = book_id
     Title = search_result[0][0]
+    close()
     getAdmin(content, root, search_result[0][0])
 
 def getAdmin(content, root, Title):
@@ -253,14 +272,14 @@ def getAdmin(content, root, Title):
     root.bind("<Key>", lambda event: keyPressed(event, content, root))
 
 def getUser():
-    global topLabel, userIcon, adminIcon, ww, wh, adminPart, userPart, bottomLabel, DONE_admin
+    global topLabel, userIcon, adminIcon, ww, wh, adminPart, userPart, bottomLabel, DONE_admin, ON_user_profile
 
     new_adminImage = ctk.CTkImage(
         light_image=Image.open(DONE_admin),
         size=((0.13 * ww), (0.23 * wh))
     )
     new_userImage = ctk.CTkImage(
-        light_image=Image.open(ON_admin_profile),
+        light_image=Image.open(ON_user_profile),
         size=((0.2 * ww), (0.35 * wh))
     )
     adminPart.configure(image = new_adminImage)
@@ -271,18 +290,20 @@ def getUser():
 def completeTransaction(RFID, content, root):
     global bookID, purpose, Title, ww, wh
 
-    pop_up_page = tk.Frame(content, width=500, height=300, bg="89AEFF")
+    pop_up_page = tk.Frame(content, width=500, height=300, bg="#89AEFF")
     pop_up_page.pack(fill="both", expand=True)
-
+    
+    left_border = tk.Frame(pop_up_page, width=5, height=300, bg="white")
+    left_border.place(x=0, rely=0, relheight=1)
     # Bind the frame touch event, passing the frame as an argument
     pop_up_page.bind("<Button-1>", lambda event: on_frame_touch(event, pop_up_page, content, root))
 
     pop_up_label = tk.Label(pop_up_page, text=f'"{Title}"', fg="white", font=("Arial", 55, "bold"), 
-                            bg="89AEFF", wraplength=1500)
+                            bg="#89AEFF", wraplength=1500)
     pop_up_label.place(relx=0.5, rely=0.45, anchor="center")
 
     pop_up_label2 = tk.Label(pop_up_page, text="Please touch the screen to continue", fg="white", 
-                             font=("Arial", 20, "bold"), bg="89AEFF")
+                             font=("Arial", 20, "bold"), bg="#89AEFF")
     pop_up_label2.place(relx=0.5, rely=0.90, anchor="center")
 
     if purpose == "Borrow":
@@ -291,11 +312,11 @@ def completeTransaction(RFID, content, root):
         addBorrowBook(RFID, bookID, Date_Borrowed, Deadline, None)
 
         pop_up_label3 = tk.Label(pop_up_page, text=f'Please return the book on or before {Deadline} to avoid being penalized.', 
-                                 fg="white", font=("Arial", 30), bg="89AEFF", wraplength=2000)
+                                 fg="white", font=("Arial", 30), bg="#89AEFF", wraplength=2000)
         pop_up_label3.place(relx=0.5, rely=0.60, anchor="center")
 
         pop_up_label4 = tk.Label(pop_up_page, text='You borrowed', fg="white", font=("Arial", 55, "bold"), 
-                                 bg="89AEFF")
+                                 bg="#89AEFF")
         pop_up_label4.place(relx=0.5, rely=0.30, anchor="center")
 
         print("Added to the database")
@@ -305,7 +326,7 @@ def completeTransaction(RFID, content, root):
         returnBook(RFID, bookID, Date_Returned)
 
         pop_up_label5 = tk.Label(pop_up_page, text='You returned', fg="white", font=("Arial", 55, "bold"), 
-                                 bg="89AEFF")
+                                 bg="#89AEFF")
         pop_up_label5.place(relx=0.5, rely=0.30, anchor="center")
 
 def on_frame_touch(event, frame, content, main):
@@ -342,8 +363,9 @@ def keyPressed(event, content, root):
         elif rfid_data and adminRFID:
             user = getUserInfo(rfid_data)
             if user == ([], [], []) or user[0][0][0] == initialUser:
-                completeTransaction(rfid_data, content, root)
                 root.unbind("<Key>")
+                successNotif("please wait for the Pop-up screen", content, root)
+                root.after(100, lambda: completeTransaction(rfid_data, content, root))
                 print(f"User Entered: {user[0][0][1]}")
             else:
                 rfid_data = ""

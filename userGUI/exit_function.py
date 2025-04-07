@@ -5,9 +5,11 @@ from datetime import datetime
 import pytz
 # INITIAL VARIABLES HERE
 def Main_exit_page(content, return_to_idle):
+    for widget in content.winfo_children():
+        if isinstance(widget, tk.Frame):
+            widget.destroy()
     exit_page = tk.Frame(content)
     exit_page.place(relx=0, rely=0, relwidth=1, relheight=1)
-
     
     ww = exit_page.winfo_screenwidth()
     wh = exit_page.winfo_screenheight()
@@ -29,10 +31,10 @@ def Main_exit_page(content, return_to_idle):
         content.after(1000, update_date)
 
     date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
-    date_label.place(relx=0.07, rely=0.2)
+    date_label.place(relx=0.5, rely=0.5, anchor = "center") 
 
     time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
-    time_label.place(relx=0.07, rely=0.2)
+    time_label.place(relx=0.5, rely=0.5, anchor = "center") 
     update_date()
     # Box
     frame = tk.Frame(exit_page, bg="white", bd=0)

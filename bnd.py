@@ -1,10 +1,12 @@
 import mysql.connector
+from mysql.connector import Error
 from sendEmail import *
 import pandas as pd
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
+import socket
 db = mysql.connector.connect(
     host="localhost",
     user="root",
@@ -36,15 +38,28 @@ def getUserInfo(RFID):
     return userInfo, userBorrowedBooks, books
 
 def searchBooks(column, ID, nthTo, nthFrom):
-    mycursor.execute(f"SELECT Book_ID, Book_Cover, Title FROM books WHERE {column} LIKE %s LIMIT %s OFFSET %s", (f"%{ID}%", nthTo, nthFrom))
+    mycursor.execute(f"SELECT Book_ID, Book_Cover, Title, Availability FROM books WHERE {column} LIKE %s LIMIT %s OFFSET %s", (f"%{ID}%", nthTo, nthFrom))
     return mycursor.fetchall()
 
 def searchBookID(bookID):
     mycursor.execute(f"SELECT Title, Author, Description, Availability, Book_Cover, Genre, Year_Publication, Book_Address FROM books WHERE Book_ID = {bookID};")
     return mycursor.fetchall()
-
+def searchBookIDtoDelete(bookID):
+    mycursor.execute(f"SELECT Title, Author, Description, Availability, Genre, Year_Publication, Book_Address FROM books WHERE Book_ID = {bookID};")
+    result = mycursor.fetchone()
+    if result:
+        return {
+            "Title": result[0],
+            "Author": result[1],
+            "Description": result[2],
+            "Availability": result[3],
+            "Genre": result[4],
+            "Year_Publication": result[5],
+            "Book_Address": result[6]
+        }
+    return result
 def showGenreBooks(genre, nthFrom, nthTo):
-    mycursor.execute("SELECT Book_ID, Book_Cover, Title  FROM books WHERE Genre = %s LIMIT %s OFFSET %s", (genre, nthTo, nthFrom))
+    mycursor.execute("SELECT Book_ID, Book_Cover, Title, Availability  FROM books WHERE Genre = %s LIMIT %s OFFSET %s", (genre, nthTo, nthFrom))
     return mycursor.fetchall()
 
 def showBorrowHistory(RFID, nthTo, nthFrom):
@@ -64,8 +79,11 @@ def showBorrowHistory(RFID, nthTo, nthFrom):
             allBooks.append([book_cover, title, author, date_borrowed, date_returned, book_id])
     return allBooks
 def penalty(RFID, num):
-    mycursor.execute("UPDATE users SET Penalty = %s WHERE RFID = %s", (num, RFID))
-    db.commit()
+    mycursor.execute("SELECT Penalty FROM users WHERE RFID = %s", (RFID,))
+    penalty = mycursor.fetchone()[0]
+    if penalty != num:
+        mycursor.execute("UPDATE users SET Penalty = %s WHERE RFID = %s", (num, RFID))
+        db.commit()
 def showGenres(nthTo, nthFrom):
     mycursor.execute("SELECT DISTINCT `Genre` FROM books LIMIT %s OFFSET %s", (nthTo, nthFrom))
     return mycursor.fetchall()
@@ -111,14 +129,11 @@ def returnBook(RFID, Book_ID, Date_returned):
     db.commit()
 def showWhoToEmail():
     listGmail = []
-    
-    # Fetch overdue borrowed books
-    mycursor.execute("SELECT RFID FROM borrowed_books WHERE date_returned IS NULL AND DATE(Deadline) = CURDATE();")
-    borrow_IDs = mycursor.fetchall()
+
+    borrow_IDs = WhoToPenalize()
 
     for row in borrow_IDs: 
         rfid = row[0]  # Assuming RFID is in the second column
-        penalty(rfid, 1)
         # Secure query to fetch email
         mycursor.execute("SELECT DISTINCT Email FROM users WHERE RFID = %s;", (rfid,))
         result = mycursor.fetchone()  # Get the single email result
@@ -131,6 +146,14 @@ def showWhoToEmail():
     for email in listGmail:
         send_Deadline_Info(email)
     return listGmail
+def WhoToPenalize():
+    mycursor.execute("SELECT RFID FROM borrowed_books WHERE date_returned IS NULL AND DATE(Deadline) >= CURDATE();")
+    borrow_IDs = mycursor.fetchall()
+    for row in borrow_IDs:
+        rfid = row[0]  # Assuming RFID is in the second column
+        print(rfid)
+        penalty(rfid, 1)
+    return borrow_IDs
 def getUserAndBookNum():
         # Query 1: Count all rows in the table
         mycursor.execute("SELECT COUNT(*) FROM users;")
@@ -244,3 +267,84 @@ def ifTheyExceedBorrow(RFID):
     borrowed_count = mycursor.fetchone()[0]
 
     return borrowed_count >= 2
+def checkPenalty(RFID):
+    mycursor.execute("SELECT Penalty FROM users WHERE RFID = %s", (RFID,))
+    penalty = mycursor.fetchone()[0]
+    if penalty == 1:
+        return True
+    else:
+        return False
+def is_connected(host="8.8.8.8", port=53, timeout=3):
+    """
+    Returns True if internet is connected, otherwise False.
+    Default tries to reach Google's DNS at 8.8.8.8
+    """
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except socket.error:
+        return False
+
+def insert_book(data):
+    try:
+        if db.is_connected():
+            cursor = db.cursor()
+
+            try:
+                # Read the image file
+                with open(data['Book_Cover'], 'rb') as f:
+                    image_blob = f.read()
+            except FileNotFoundError:
+                print(f"Error: The file '{data['Book_Cover']}' was not found.")
+                return
+            except Exception as e:
+                print(f"Error reading the image file: {e}")
+                return
+
+            # Prepare the SQL query
+            sql = ("INSERT INTO books (Book_ID, Title, Author, Description, Availability, "
+                   "Book_Cover, Genre, Year_Publication, Book_Address) "
+                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)")
+
+            values = (
+                data['Book_ID'],
+                data['Title'],
+                data['Author'],
+                data['Description'],
+                data['Availability'],
+                image_blob,
+                data['Genre'],
+                data['Year_Publication'],
+                data['Book_Address']
+            )
+
+            try:
+                # Execute the query and commit the transaction
+                cursor.execute(sql, values)
+                db.commit()
+                print("Book inserted successfully.")
+            except mysql.connector.Error as e:
+                print(f"MySQL Error: {e}")
+                db.rollback()  # Rollback in case of error
+            except Exception as e:
+                print(f"Error executing the query: {e}")
+                db.rollback()  # Rollback in case of error
+
+            # Close the cursor
+        else:
+            print("Error: Unable to connect to the database.")
+
+    except mysql.connector.Error as e:
+        print(f"Error connecting to the database: {e}")
+    except Exception as e:
+        print(f"General error: {e}")
+def delete_book_by_ID(Book_ID):
+    try:
+        mycursor.execute("DELETE FROM books WHERE Book_ID = %s", (Book_ID,))
+        db.commit()
+        affected_rows = mycursor.rowcount
+        return affected_rows
+    except mysql.connector.Error as err:
+        raise err
+print(adminCheck("0010542281"))

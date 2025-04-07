@@ -4,7 +4,7 @@ import customtkinter as ctk  # type: ignore
 from PIL import Image, ImageTk  # type: ignore
 import io
 from Book_profile import *
-
+from keyboard import *
 
 # GLOBAL VARIABLES HERE
 firstSectionNum = 0
@@ -25,7 +25,10 @@ def load_image(filename, size=(50, 50)):
         print(f"Error loading image {filename}: {e}")
         return None
 
-def Main_search_page(content):
+def Main_search_page(content, root):
+    for widget in content.winfo_children():
+        if isinstance(widget, tk.Frame):
+            widget.destroy()
     global firstSectionNum
     global genresNum
     global genres
@@ -66,9 +69,11 @@ def Main_search_page(content):
         genresNum -= num
 
         # Remove previous book buttons 
-        for button, y, title in book_buttons:
+        for button, y, title, unavailable in book_buttons:
             button.destroy()
             title.destroy()
+            if unavailable:
+                unavailable.destroy()
         book_buttons.clear()  # Reset list
 
         # Increment genresNum to move forward
@@ -109,10 +114,12 @@ def Main_search_page(content):
         elif sectionName == "secondSectionNum":
             sectionVar = secondSectionNum
             rely_value = 0.730
-        for button, y_val, title in book_buttons:  # Iterate over a copy to avoid modification issues
+        for button, y_val, title, unavailable in book_buttons:  # Iterate over a copy to avoid modification issues
             if y_val == rely_value:
                 button.destroy()
                 title.destroy()
+                if unavailable:
+                    unavailable.destroy()
             # Hide 'Prev' if at the first section
         if sectionVar - num <= 0:
             nextButton.place(relx=next_x, rely=next_y, anchor= 'w')
@@ -160,10 +167,10 @@ def Main_search_page(content):
         search_page.after(1000, update_date)
 
     date_label = ctk.CTkLabel(date_border, font=("Arial", 24, 'bold'), text_color="Black")
-    date_label.place(relx=0.07, rely=0.2)
+    date_label.place(relx=0.5, rely=0.5, anchor = "center")
 
     time_label = ctk.CTkLabel(time_border, font=("Arial", 24, 'bold'), text_color="Black")
-    time_label.place(relx=0.07, rely=0.2)
+    time_label.place(relx=0.5, rely=0.5, anchor = "center")
     update_date()
     # Create a border for the search bar
     search_border = ctk.CTkFrame(search_page, width=800, height=85, fg_color='white', corner_radius=15)
@@ -173,10 +180,10 @@ def Main_search_page(content):
     search_bar = ctk.CTkEntry(search_border, width=750, height=70, corner_radius=30, bg_color='white', fg_color='white',
                               text_color="black", placeholder_text="Search bar", font=("Arial", 20))
     search_bar.place(relx=0.5, rely=0.5, anchor="center")
-
+    search_bar.bind("<Button-1>", lambda event: open_keyboard(root, search_bar, event))
     # Frame for all books (already exists)
     books = ctk.CTkFrame(content, width=(0.8 * ww), height=650, fg_color="white", 
-                      corner_radius=20, border_width=15, border_color="#5088FC")
+                      corner_radius=20, border_width=5, border_color="#5088FC")
     books.place(relx=0.5, rely=0.55, anchor="center")
 
     # Divider Line
@@ -214,7 +221,7 @@ def Main_search_page(content):
             bot_label = ctk.CTkLabel(books, text=genres[genresNum + 1], font=("Arial", 28, "bold"), text_color="grey")
             bot_label.place(relx=0.05, rely=0.53, anchor="w")
             genre_labels.extend([top_label, bot_label])
-        for i, (id, blob, title) in enumerate(bookArray):
+        for i, (id, blob, title, availability) in enumerate(bookArray):
             try:
                 # Load image from binary data
                 image = Image.open(io.BytesIO(blob)).resize((136, 205))
@@ -228,12 +235,17 @@ def Main_search_page(content):
                 books, image=ctk_image, compound="top", text= "",
                 fg_color="white", hover_color="lightblue", command = lambda id=id: book_profile(content, id)
             )
-            titleLabel = ctk.CTkLabel(books, text=title, font=("Stylus", 13.5, "bold"), text_color="gray", wraplength=300)
-            titleLabel.place(relx=positions[i][0], rely=(positions[i][1])+0.20, anchor="center")
+            titleLabel = ctk.CTkLabel(books, text=title, font=("Poppins", 12.5, "bold"), text_color="black", wraplength=300)
+            titleLabel.place(relx=positions[i][0], rely=(positions[i][1])+0.185, anchor="center")
+            if availability == 0:
+                unavailableBox = ctk.CTkFrame(books, width=150, height=20, fg_color="#8c1c2d", corner_radius= 50)
+                unavailableBox.place(relx=positions[i][0], rely=(positions[i][1])+0.225, anchor="center")
+                unavailableText = ctk.CTkLabel(unavailableBox, text="Currently Unavailable", font=("Poppins", 12.5, "bold"), text_color="white", wraplength=300, height= 10)
+                unavailableText.place(relx=0.5, rely=0.5, anchor="center")
             # Place button using predefined positions
             book_button.place(relx=positions[i][0], rely=(positions[i][1]), anchor="center")
             book_button.image = ctk_image  # Keep reference to prevent garbage collection
-            book_buttons.append((book_button, y, titleLabel))
+            book_buttons.append((book_button, y, titleLabel, unavailableBox))
             # Fetch books from two genres
     firstGenres = booksOutput(genres[genresNum], "firstSectionNum", 0)
     secondGenres = booksOutput(genres[genresNum + 1], "secondSectionNum", 0)
@@ -263,6 +275,7 @@ def Main_search_page(content):
             search_back_button = ctk.CTkButton(books, text='', image= back_image, bg_color="white", width=50, fg_color="white", command= lambda: searchTitle(searchedItem, (searchNum - 6)))
             search_back_button.place(relx=0.93, rely=0.05, anchor='ne')
     def enterSearch():
+        close()
         input = search_bar.get()
         searchTitle(input, 0)
     search_button = ctk.CTkButton(search_bar, text='', image=search_image, width=75, fg_color='white', command=enterSearch)
